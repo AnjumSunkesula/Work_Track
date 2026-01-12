@@ -8,22 +8,32 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
+    try {
+      const storedUser = localStorage.getItem("user");
+      const storedToken = localStorage.getItem("token");
 
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
+      if (storedUser && storedUser !== "undefined" && storedToken) {
+        setUser(JSON.parse(storedUser));
+        setToken(storedToken);
+      }
+    } catch (err) {
+      console.error("Invalid auth data in localStorage", err);
+      localStorage.clear();
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
+
   const login = (userData, token) => {
+    if (!userData || !token) return;
+
     setUser(userData);
     setToken(token);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
   };
+
 
   const logout = () => {
     setUser(null);
