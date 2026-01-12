@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5200/api/auth"; // adjust if needed
+const API_URL = "https://localhost:7200/api/Users"; // adjust if needed
 
 export async function loginUser(data) {
   const res = await fetch(`${API_URL}/login`, {
@@ -16,7 +16,7 @@ export async function loginUser(data) {
 }
 
 export async function registerUser(data) {
-  const res = await fetch(`${API_URL}/register`, {
+  const res = await fetch(`${API_URL}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
