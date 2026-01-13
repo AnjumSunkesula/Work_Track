@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { getMe } from "../api/auth";
 
 const AuthContext = createContext();
 
@@ -7,31 +8,35 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Restore auth on refresh
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      const storedToken = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("token");
 
-      if (storedUser && storedUser !== "undefined" && storedToken) {
-        setUser(JSON.parse(storedUser));
-        setToken(storedToken);
-      }
-    } catch (err) {
-      console.error("Invalid auth data in localStorage", err);
-      localStorage.clear();
-    } finally {
+    if (storedToken) {
+      setToken(storedToken);
+      getMe(storedToken)
+        .then(setUser)
+        .catch(() => {
+          localStorage.clear();
+          setToken(null);
+        })
+        .finally(() => setLoading(false));
+    } else {
       setLoading(false);
     }
   }, []);
 
 
-  const login = (userData, token) => {
-    if (!userData || !token) return;
 
-    setUser(userData);
+  // Login handler
+  const login = async (_, token) => {
+    if (!token) return;
+
     setToken(token);
-    localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
+
+    const me = await getMe(token);
+    setUser(me);
   };
 
 
@@ -43,7 +48,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, loading }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
