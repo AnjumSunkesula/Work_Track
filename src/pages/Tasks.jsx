@@ -17,6 +17,7 @@ export default function Tasks() {
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [actionLoading, setActionLoading] = useState({});
 
+  const trimmedTitle = title.trim();
 
   useEffect(() => {
     if (!token) return;
@@ -89,7 +90,7 @@ export default function Tasks() {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="New task"
         />
-        <button>Add</button>
+        <button disabled={!trimmedTitle}>Add</button>
       </form>
 
       {/*Loading state */}
