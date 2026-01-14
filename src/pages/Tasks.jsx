@@ -31,6 +31,10 @@ export default function Tasks() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
+
+    const trimmed = title.trim();
+    if (!trimmed) return;
+    
     try {
       const newTask = await createTask(title, token);
       setTasks([...tasks, newTask]);
