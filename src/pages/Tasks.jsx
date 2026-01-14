@@ -12,6 +12,7 @@ export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
+  const [filter,setFilter] = useState("all");
 
   useEffect(() => {
     if (!token) return;
@@ -38,6 +39,9 @@ export default function Tasks() {
   };
 
   const handleDelete = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete the selected task?")
+    if (!confirmed) return;
+
     await deleteTask(id, token);
     setTasks(tasks.filter(t => t.id !== id));
   };
@@ -45,6 +49,13 @@ export default function Tasks() {
   return (
     <div>
       <h2>My Tasks</h2>
+
+      <div className="filters">
+        <button onClick={() => setFilter("all")}>All</button>
+        <button onClick={() => setFilter("active")}>Active</button>
+        <button onClick={() => setFilter("completed")}>Completed</button>
+      </div>
+
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
@@ -58,11 +69,32 @@ export default function Tasks() {
       </form>
 
       <ul>
-        {tasks.map((t) => (
+        {tasks.filter(t => {
+          if (filter === "active") return !t.isCompleted;
+          if (filter === "completed") return t.isCompleted;
+          return true;
+        })
+        .map((t) => (
           <li key={t.id}>
-            {t.title} {t.isCompleted && "✅"}
+            <div>
+              <strong>{t.title}</strong> {t.isCompleted && "✅"}
+
+              <div style={{ fontSize: "0.85rem", color: "#666" }}>
+                <div>Created: {formatDate(t.createdAt)}</div>
+
+                {t.isCompleted && (
+                  <div>Completed: {formatDate(t.completedAt)}</div>
+                )}
+              </div>
+            </div>
+
             {!t.isCompleted && (
-              <button onClick={() => handleComplete(t.id)}>Complete</button>
+              <button
+                onClick={() => handleComplete(t.id)}
+                disabled={t.isCompleted}
+              >
+                {t.isCompleted ? "Completed" : "Complete"}
+              </button>
             )}
             <button onClick={() => handleDelete(t.id)}>❌</button>
           </li>
