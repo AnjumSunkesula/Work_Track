@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { getTasks, createTask, completeTask, deleteTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 
+function formatDate(dateString) {
+  if (!dateString) return "";
+  return new Date(dateString).toLocaleString();
+}
+
 export default function Tasks() {
   const { token } = useAuth();
   const [tasks, setTasks] = useState([]);
