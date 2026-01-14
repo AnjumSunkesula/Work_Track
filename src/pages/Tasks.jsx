@@ -9,17 +9,21 @@ function formatDate(dateString) {
 
 export default function Tasks() {
   const { token } = useAuth();
+
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
   const [filter,setFilter] = useState("all");
+  const [loadingTasks, setLoadingTasks] = useState(true);
 
   useEffect(() => {
     if (!token) return;
 
+    setLoadingTasks(true);
     getTasks(token)
       .then(setTasks)
-      .catch(() => setError("Failed to load tasks"));
+      .catch(() => setError("Failed to load tasks"))
+      .finally(() => setLoadingTasks(false));
   }, [token]);
 
   const handleAdd = async (e) => {
@@ -46,6 +50,12 @@ export default function Tasks() {
     setTasks(tasks.filter(t => t.id !== id));
   };
 
+  const filteredTasks = tasks.filter(t => {
+    if (filter === "active") return !t.isCompleted;
+    if (filter === "completed") return t.isCompleted;
+    return true;
+  });
+
   return (
     <div>
       <h2>My Tasks</h2>
@@ -68,33 +78,44 @@ export default function Tasks() {
         <button>Add</button>
       </form>
 
-      <ul>
-        {tasks.filter(t => {
-          if (filter === "active") return !t.isCompleted;
-          if (filter === "completed") return t.isCompleted;
-          return true;
-        })
-        .map((t) => (
-          <li key={t.id}>
-            <div>
-              <strong>{t.title}</strong> {t.isCompleted && "✅"}
+      {/*Loading state */}
+      {loadingTasks && <p>Loading tasks...</p>}
 
-              <div style={{ fontSize: "0.85rem", color: "#666" }}>
-                <div>Created: {formatDate(t.createdAt)}</div>
+      {/* Empty state */}
+      {!loadingTasks && filteredTasks.length === 0 && (
+        <p>No tasks yet. Add your first task</p>
+      )}
 
-                {t.isCompleted && (
-                  <div>Completed: {formatDate(t.completedAt)}</div>
-                )}
+      {/*task list  */}
+      {!loadingTasks && filteredTasks.length > 0 && (
+        <ul>
+          {tasks.filter(t => {
+            if (filter === "active") return !t.isCompleted;
+            if (filter === "completed") return t.isCompleted;
+            return true;
+          })
+          .map((t) => (
+            <li key={t.id}>
+              <div>
+                <strong>{t.title}</strong> {t.isCompleted && "✅"}
+
+                <div style={{ fontSize: "0.85rem", color: "#666" }}>
+                  <div>Created: {formatDate(t.createdAt)}</div>
+
+                  {t.isCompleted && (
+                    <div>Completed: {formatDate(t.completedAt)}</div>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {!t.isCompleted && (
-              <button onClick={() => handleComplete(t.id)}>Complete</button>
-            )}
-            <button onClick={() => handleDelete(t.id)}>❌</button>
-          </li>
-        ))}
-      </ul>
+              {!t.isCompleted && (
+                <button onClick={() => handleComplete(t.id)}>Complete</button>
+              )}
+              <button onClick={() => handleDelete(t.id)}>❌</button>
+            </li>
+          ))}
+         </ul>
+      )}
     </div>
   );
 }
