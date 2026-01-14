@@ -5,6 +5,8 @@ import Login from './pages/login';
 import ProtectedRoute from "./components/ProtectedRoute";
 import './App.css'
 import LogoutButton from "./components/LogoutButton";
+import TasksPage from "./pages/TasksPage";
+import Tasks from "./pages/Tasks";
 
 function App() {
 
@@ -18,7 +20,7 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <h1>Dashboard</h1>
+                <Tasks/>
                 <LogoutButton/>
               </ProtectedRoute>
             }
