@@ -89,12 +89,7 @@ export default function Tasks() {
             </div>
 
             {!t.isCompleted && (
-              <button
-                onClick={() => handleComplete(t.id)}
-                disabled={t.isCompleted}
-              >
-                {t.isCompleted ? "Completed" : "Complete"}
-              </button>
+              <button onClick={() => handleComplete(t.id)}>Complete</button>
             )}
             <button onClick={() => handleDelete(t.id)}>❌</button>
           </li>
