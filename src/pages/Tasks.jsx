@@ -15,6 +15,8 @@ export default function Tasks() {
   const [error, setError] = useState("");
   const [filter,setFilter] = useState("all");
   const [loadingTasks, setLoadingTasks] = useState(true);
+  const [actionLoading, setActionLoading] = useState({});
+
 
   useEffect(() => {
     if (!token) return;
@@ -38,16 +40,28 @@ export default function Tasks() {
   };
 
   const handleComplete = async (id) => {
-    const updated = await completeTask(id, token);
-    setTasks(tasks.map(t => (t.id === id ? updated : t)));
+    setActionLoading(prev => ({ ...prev, [id]: true }));
+
+    try{
+      const updated = await completeTask(id, token);
+      setTasks(tasks.map(t => (t.id === id ? updated : t)));
+    } finally {
+      setActionLoading(prev => ({...prev, [id]: false}));
+    }
   };
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm("Are you sure you want to delete the selected task?")
     if (!confirmed) return;
 
-    await deleteTask(id, token);
-    setTasks(tasks.filter(t => t.id !== id));
+    setActionLoading(prev => ({ ...prev, [id]: true }));
+
+    try {
+      await deleteTask(id, token);
+      setTasks(tasks.filter(t => t.id !== id));
+    } finally {
+      setActionLoading(prev => ({ ...prev, [id]: false }));
+    }
   };
 
   const filteredTasks = tasks.filter(t => {
@@ -109,12 +123,23 @@ export default function Tasks() {
               </div>
 
               {!t.isCompleted && (
-                <button onClick={() => handleComplete(t.id)}>Complete</button>
+                <button
+                  onClick={() => handleComplete(t.id)}
+                  disabled={actionLoading[t.id]}
+                >
+                  {actionLoading[t.id] ? "Completing..." : "Complete"}
+                </button>
               )}
-              <button onClick={() => handleDelete(t.id)}>❌</button>
+
+              <button
+                onClick={() => handleDelete(t.id)}
+                disabled={actionLoading[t.id]}
+              >
+                {actionLoading[t.id] ? "Deleting..." : "❌"}
+              </button>
             </li>
           ))}
-         </ul>
+        </ul>
       )}
     </div>
   );
