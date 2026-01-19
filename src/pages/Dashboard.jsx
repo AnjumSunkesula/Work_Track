@@ -1,21 +1,85 @@
 import Sidebar from "../components/Sidebar";
 import StatCard from "../components/StatCard";
 import PriorityBadge from "../components/PriorityBadge";
+import { useState,useEffect } from "react";
 
 export default function Dashboard() {
+
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("https://localhost:7200/api/dashboard/stats", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch dashboard stats");
+        }
+
+        const data = await res.json();
+        setStats(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center text-brand-dark">
+        Loading dashboard...
+      </div>
+    );
+  }
+
+  function Stat({ label, value }) {
+    return (
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-black/5">
+        <p className="text-sm text-gray-500">{label}</p>
+        <h3 className="text-3xl font-semibold mt-2 text-brand-dark">
+          {value}
+        </h3>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-brand-bg">
       <Sidebar />
 
       <main className="flex-1 p-10">
-        <h1 className="text-3xl font-semibold text-brand-dark">Dashboard</h1>
+        <h1 className="text-3xl font-semibold text-brand-dark mb-10">Dashboard</h1>
+
+        {/* Loading */}
+        {loading && (
+          <p className="text-sm text-slate-500">Loading stats...</p>
+        )}
+
+        {/* Error */}
+        {error && (
+          <p className="text-sm text-red-500">{error}</p>
+        )}
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <StatCard title="Total Tasks" value="24" />
-          <StatCard title="Completed" value="15" />
-          <StatCard title="Pending" value="9" />
-        </div>
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <Stat label="Total Tasks" value={stats.totalTasks} />
+            <Stat label="Completed" value={stats.completedTasks} />
+            <Stat label="Pending" value={stats.pendingTasks} />
+          </div>
+        )}
 
         {/* Placeholder sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
