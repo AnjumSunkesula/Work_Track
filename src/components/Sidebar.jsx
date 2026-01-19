@@ -1,5 +1,10 @@
 import { NavLink } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
+import {X} from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
+import { CalendarDays } from "lucide-react";
+import { ListTodo } from "lucide-react";
+import { UsersRound } from "lucide-react";
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
 
@@ -24,7 +29,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           className="text-white text-lg"
           aria-label="Close sidebar"
         >
-          ✕
+          <X />
         </button>
       </div>
 
@@ -37,8 +42,10 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
             `${linkBase} ${isActive ? activeClass : inactiveClass}`
           }
         >
-          <span>📊</span>
-          <span>Dashboard</span>
+          <div className="flex items-center gap-2">
+            <span><LayoutDashboard /></span>
+            <span>Dashboard</span>
+          </div>
         </NavLink>
 
         <NavLink
@@ -47,16 +54,20 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
             `${linkBase} ${isActive ? activeClass : inactiveClass}`
           }
         >
-          <span>✅</span>
-          <span>Tasks</span>
+          <div className="flex items-center gap-2">
+            <span><ListTodo /></span>
+            <span>Tasks</span>
+          </div>
         </NavLink>
 
         <NavLink
           to="/calendar"
           className={`${linkBase} ${inactiveClass}`}
         >
-          <span>📅</span>
-          <span>Calendar</span>
+          <div className="flex items-center gap-2">
+            <span><CalendarDays /></span>
+            <span>Calendar</span>
+          </div>
         </NavLink>
       </nav>
 
