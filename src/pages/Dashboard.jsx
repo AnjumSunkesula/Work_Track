@@ -1,5 +1,3 @@
-import Sidebar from "../components/Sidebar";
-import StatCard from "../components/StatCard";
 import PriorityBadge from "../components/PriorityBadge";
 import { useState,useEffect } from "react";
 
@@ -9,40 +7,42 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("https://localhost:7200/api/dashboard/stats", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch dashboard stats");
+      }
+
+      const data = await res.json();
+      setStats(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const token = localStorage.getItem("token");
+    fetchStats();
 
-        const res = await fetch("https://localhost:7200/api/dashboard/stats", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch dashboard stats");
-        }
-
-        const data = await res.json();
-        setStats(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    // listen for task updates
+    const onStorageChange = (e) => {
+      if (e.key === "refreshDashboardStats") {
+        fetchStats();
       }
     };
-    
-    fetchStats();
-  }, []);
 
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center text-brand-dark">
-        Loading dashboard...
-      </div>
-    );
-  }
+    window.addEventListener("storage", onStorageChange);
+    return () => window.removeEventListener("storage", onStorageChange);
+  }, []);
 
   function Stat({ label, value }) {
     return (
@@ -55,9 +55,18 @@ export default function Dashboard() {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center text-brand-dark">
+        Loading dashboard...
+      </div>
+    );
+  }
+
+
   return (
     <div className="flex min-h-screen bg-brand-bg">
-      <Sidebar />
+      {/* <Sidebar /> */}
 
       <main className="flex-1 p-10">
         <h1 className="text-3xl font-semibold text-brand-dark mb-10">Dashboard</h1>
