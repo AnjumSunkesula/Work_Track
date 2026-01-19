@@ -3,10 +3,10 @@ import { AuthProvider } from "./context/AuthContext";
 import Register from './pages/Register';
 import Login from './pages/login';
 import ProtectedRoute from "./components/ProtectedRoute";
-// import './index.css'
 import LogoutButton from "./components/LogoutButton";
 import Tasks from "./pages/Tasks";
 import Dashboard from "./pages/Dashboard";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 function App() {
 
@@ -20,12 +20,13 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <Tasks/>
-                <LogoutButton/>
-                <Dashboard/>
+                <DashboardLayout/>
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="tasks" element={<Tasks />} />
+          </Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>
