@@ -23,7 +23,7 @@ export default function MiniSidebar({ isOpen, toggle }) {
 
         {/* Tooltip */}
         <span className="
-          absolute left-12 top-1/3 -translate-y-1/2
+          absolute left-12 top-5 -translate-y-1/2
           whitespace-nowrap
           bg-white text-brand-dark text-sm font-medium
           px-3 py-1 rounded-md shadow-md
