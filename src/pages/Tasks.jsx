@@ -50,6 +50,8 @@ export default function Tasks() {
     try{
       const updated = await completeTask(id, token);
       setTasks(tasks.map(t => (t.id === id ? updated : t)));
+
+      localStorage.setItem("refreshDashboardStats", Date.now().toString());
     } finally {
       setActionLoading(prev => ({...prev, [id]: false}));
     }
@@ -64,6 +66,8 @@ export default function Tasks() {
     try {
       await deleteTask(id, token);
       setTasks(tasks.filter(t => t.id !== id));
+
+      localStorage.setItem("refreshDashboardStats", Date.now().toString());
     } finally {
       setActionLoading(prev => ({ ...prev, [id]: false }));
     }
