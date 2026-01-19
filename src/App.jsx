@@ -3,10 +3,10 @@ import { AuthProvider } from "./context/AuthContext";
 import Register from './pages/Register';
 import Login from './pages/login';
 import ProtectedRoute from "./components/ProtectedRoute";
-import './App.css'
+// import './index.css'
 import LogoutButton from "./components/LogoutButton";
-import TasksPage from "./pages/TasksPage";
 import Tasks from "./pages/Tasks";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
 
@@ -22,6 +22,7 @@ function App() {
               <ProtectedRoute>
                 <Tasks/>
                 <LogoutButton/>
+                <Dashboard/>
               </ProtectedRoute>
             }
           />
