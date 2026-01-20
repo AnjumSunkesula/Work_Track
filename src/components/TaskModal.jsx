@@ -1,6 +1,6 @@
 import {X} from "lucide-react";
 
-export default function ShowModal({isOpen, onClose, title, setTitle, priority, setPriority, description, setDescription, dueDate, setDueDate, handleAdd}) {
+export default function TaskModal({isOpen, onClose, title, setTitle, priority, setPriority, description, setDescription, dueDate, setDueDate, handleAdd}) {
 
   if (!isOpen) return null;
 
