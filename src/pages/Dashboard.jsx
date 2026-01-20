@@ -6,23 +6,30 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [recentTasks, setRecentTasks] = useState([]);
 
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("https://localhost:7200/api/dashboard/stats", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const [statsRes, tasksRes] = await Promise.all([
+        fetch("https://localhost:7200/api/dashboard/stats", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch("https://localhost:7200/api/dashboard/recent-tasks", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch dashboard stats");
+      if (!statsRes.ok || !tasksRes.ok) {
+        throw new Error("Failed to fetch dashboard data");
       }
 
-      const data = await res.json();
-      setStats(data);
+      const statsData = await statsRes.json();
+      const tasksData = await tasksRes.json();
+
+      setStats(statsData);
+      setRecentTasks(tasksData);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -95,30 +102,37 @@ export default function Dashboard() {
               Recent Tasks
             </h2>
 
-            <ul className="space-y-4">
-              <li className="flex items-center justify-between">
-                <span className="text-sm text-brand-dark">
-                  Design dashboard UI
-                </span>
-                <PriorityBadge level="HIGH" />
-              </li>
+            {recentTasks.length === 0 ? (
+              <p className="text-sm text-slate-500">
+                No tasks yet.
+              </p>
+            ) : (
+              <ul className="space-y-4">
+                {recentTasks.map(task => (
+                  <li
+                    key={task.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-sm ${
+                          task.isCompleted
+                            ? "line-through text-slate-400"
+                            : "text-brand-dark"
+                        }`}
+                      >
+                        {task.title}
+                      </span>
 
-              <li className="flex items-center justify-between">
-                <span className="text-sm text-brand-dark">
-                  Fix Tailwind setup
-                </span>
-                <PriorityBadge level="MED" />
-              </li>
+                      {task.isCompleted && <span>✅</span>}
+                    </div>
 
-              <li className="flex items-center justify-between">
-                <span className="text-sm text-brand-dark">
-                  Refactor task list
-                </span>
-                <PriorityBadge level="LOW" />
-              </li>
-            </ul>
+                    <PriorityBadge level={task.priority} />
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-
 
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
             <h2 className="font-medium text-brand-dark mb-4">Activity</h2>
