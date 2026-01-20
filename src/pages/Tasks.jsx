@@ -3,6 +3,7 @@ import { getTasks, createTask, deleteTask, toggleTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus  } from "lucide-react";
 import PriorityBadge from "../components/PriorityBadge";
+import TaskModal from "../components/TaskModal";
 
 
 function groupTasks(tasks) {
@@ -110,6 +111,7 @@ export default function Tasks() {
   const [actionLoading, setActionLoading] = useState({});
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  
 
 
   useEffect(() => {
@@ -130,11 +132,12 @@ export default function Tasks() {
     try {
       const newTask = await createTask(title, token, priority);
       setTasks([...tasks, newTask]);
+
       setTitle("");
       setPriority("MED");
       setDescription("");
-    setDueDate("");
-    setShowModal(false);
+      setDueDate("");
+      setShowModal(false);
     } catch {
       setError("Failed to add task");
     }
@@ -338,74 +341,19 @@ export default function Tasks() {
           )
         )}
       </div>
-
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white w-full max-w-lg rounded-2xl p-6 shadow-xl">
-            
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-brand-dark">
-                New task
-              </h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-slate-400 hover:text-brand-dark"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Title */}
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Name of task"
-              className="w-full mb-4 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-secondary"
-            />
-
-            {/* Priority + Due date */}
-            <div className="flex gap-3 mb-4">
-              <select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className="rounded-lg border px-3 py-2 text-sm bg-white"
-              >
-                <option value="LOW">Low</option>
-                <option value="MED">Medium</option>
-                <option value="HIGH">High</option>
-              </select>
-
-              <input
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="rounded-lg border px-3 py-2 text-sm"
-              />
-            </div>
-
-            {/* Description */}
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Description (optional)"
-              rows={4}
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-secondary"
-            />
-
-            {/* Footer */}
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={handleAdd}
-                disabled={!title.trim()}
-                className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Create task
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <TaskModal
+        isOpen={showModal}
+        title={title}
+        onClose={() => setShowModal(false)}
+        setTitle={setTitle}
+        priority={priority}
+        setPriority={setPriority}
+        description={description}
+        setDescription={setDescription}
+        dueDate={dueDate}
+        setDueDate={setDueDate}
+        handleAdd={handleAdd}
+      />
     </div>
   );
 }
