@@ -4,9 +4,10 @@ import { useAuth } from "../context/AuthContext";
 import { CheckCircle2, Trash2 } from "lucide-react";
 import PriorityBadge from "../components/PriorityBadge";
 
-function formatDate(dateString) {
-  if (!dateString) return "";
-  return new Date(dateString).toLocaleString();
+function getRelativeTime(utcDateString) {
+  if (!utcDateString) return "";
+  const date = new Date(utcDateString + "Z");
+  return date.toLocaleString();
 }
 
 export default function Tasks() {
@@ -183,7 +184,7 @@ export default function Tasks() {
                 : "bg-white border-slate-200 hover:shadow-sm"
               }`}
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => handleComplete(task.id)}
                 disabled={task.isCompleted}
@@ -197,24 +198,29 @@ export default function Tasks() {
               </button>
 
               <div>
-                <p
-                  className={`text-sm font-medium
-                    ${task.isCompleted
-                      ? "line-through text-slate-400"
-                      : "text-brand-dark"
-                    }`}
-                >
-                  {task.title}
-                </p>
+                <div className="flex justify-between ">
+                  <p
+                    className={`text-sm font-medium
+                      ${task.isCompleted
+                        ? "line-through text-slate-400"
+                        : "text-brand-dark"
+                      }`}
+                  >
+                    {task.title}
+                  </p>
+
+
+                  <PriorityBadge level={task.priority} />
+
+                </div>
 
                 <p className="text-xs text-slate-400 mt-1">
-                  Created: {formatDate(task.createdAt)}
+                  Created: {getRelativeTime(task.createdAt)}
                   {task.isCompleted && (
-                    <> · Completed: {formatDate(task.completedAt)}</>
+                    <> · Completed: {getRelativeTime(task.completedAt)}</>
                   )}
                 </p>
 
-                <PriorityBadge level={task.priority} />
               </div>
             </div>
 
