@@ -1,6 +1,23 @@
 import PriorityBadge from "../components/PriorityBadge";
 import { useState,useEffect } from "react";
 
+function buildActivity(task) {
+  if (task.isCompleted) {
+    return {
+      text: `Completed "${task.title}"`,
+      time: task.createdAt,
+      type: "completed",
+    };
+  }
+
+  return {
+    text: `Created "${task.title}"`,
+    time: task.createdAt,
+    type: "created",
+  };
+}
+
+
 export default function Dashboard() {
 
   const [stats, setStats] = useState(null);
@@ -136,9 +153,44 @@ export default function Dashboard() {
 
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
             <h2 className="font-medium text-brand-dark mb-4">Activity</h2>
-            <p className="text-slate-500 text-sm">
-              Activity feed UI placeholder.
-            </p>
+            {recentTasks.length === 0 ? (
+              <p className="text-sm text-slate-500">
+                No recent activity.
+              </p>
+            ) : (
+              <ul className="space-y-4">
+                {recentTasks.map(task => {
+                  const activity = buildActivity(task);
+
+                  return (
+                    <li
+                      key={task.id}
+                      className="flex items-start gap-3"
+                    >
+                      {/* Icon */}
+                      <span className={`mt-1 text-sm ${
+                        activity.type === "completed"
+                          ? "text-green-500"
+                          : "text-brand-dark"
+                      }`}>
+                        {activity.type === "completed" ? "✔" : "➕"}
+                      </span>
+
+                      {/* Text */}
+                      <div className="flex-1">
+                        <p className="text-sm text-brand-dark">
+                          {activity.text}
+                        </p>
+
+                        <p className="text-xs text-slate-400 mt-0.5">
+                          {new Date(activity.time).toLocaleString()}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
         </div>
       </main>
