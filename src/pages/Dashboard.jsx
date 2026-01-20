@@ -2,33 +2,38 @@ import PriorityBadge from "../components/PriorityBadge";
 import { useState,useEffect } from "react";
 
 function buildActivity(task) {
-  if (task.isCompleted) {
+    if (task.isCompleted && task.completedAt) {
     return {
+      id: task.id,
       text: `Completed "${task.title}"`,
-      time: task.createdAt,
       type: "completed",
+      time: task.completedAt, 
     };
   }
 
   return {
+    id: task.id,
     text: `Created "${task.title}"`,
-    time: task.createdAt,
     type: "created",
+    time: task.createdAt, 
   };
+
 }
 
-function getRelativeTime(date) {
+function getRelativeTime(utDateString) {
+  const date = new Date(utDateString + "Z"); // Ensure UTC
   const now = new Date();
-  const diffMs = now - new Date(date);
-  const diffMin = Math.floor(diffMs / 60000);
 
-  if (diffMin < 1) return "Just now";
-  if (diffMin < 60) return `${diffMin} min ago`;
-
+  const diffMs = now - date;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
   const diffHr = Math.floor(diffMin / 60);
+
+  if (diffSec < 30) return "Just Now";
+  if (diffMin < 60) return `${diffMin} min ago`;
   if (diffHr < 24) return `${diffHr} hr ago`;
 
-  return new Date(date).toLocaleDateString();
+  return date.toLocaleDateString();
 }
 
 function groupByDay(tasks) {
@@ -43,7 +48,7 @@ function groupByDay(tasks) {
   yesterday.setDate(today.getDate() - 1);
 
   tasks.forEach(task => {
-    const date = new Date(task.createdAt);
+    const date = new Date(task.time);
 
     if (date.toDateString() === today.toDateString()) {
       groups.Today.push(task);
@@ -97,15 +102,10 @@ export default function Dashboard() {
   useEffect(() => {
     fetchStats();
 
-    // listen for task updates
-    const onStorageChange = (e) => {
-      if (e.key === "refreshDashboardStats") {
-        fetchStats();
-      }
-    };
+    const refresh = () => fetchStats();
+    window.addEventListener("dashboard-refresh", refresh);
 
-    window.addEventListener("storage", onStorageChange);
-    return () => window.removeEventListener("storage", onStorageChange);
+    return () => window.removeEventListener("dashboard-refresh", refresh);
   }, []);
 
   function Stat({ label, value }) {
