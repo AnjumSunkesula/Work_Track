@@ -1,34 +1,42 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getTasks, createTask, deleteTask, toggleTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus  } from "lucide-react";
 import PriorityBadge from "../components/PriorityBadge";
 import TaskModal from "../components/TaskModal";
 
+function startOfDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
 
-function groupTasks(tasks) {
+function groupTasksByCreatedAt(tasks) {
   const now = new Date();
-  const today = new Date(now.toDateString());
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
+  const today = startOfDay(now);
 
-  const endOfWeek = new Date(today);
-  endOfWeek.setDate(today.getDate() + 7);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  const last7Days = new Date(today);
+  last7Days.setDate(today.getDate() - 7);
 
   const groups = {
     Today: [],
-    Tomorrow: [],
-    "This week": [],
+    Yesterday: [],
+    "A Week Ago": [],
+    Older: [],
   };
 
   tasks.forEach(task => {
-    const date = new Date(task.createdAt);
-    if (date >= today && date < tomorrow) {
+    const created = startOfDay(new Date(task.createdAt));
+
+    if (created.getTime() === today.getTime()) {
       groups.Today.push(task);
-    } else if (date >= tomorrow && date < endOfWeek) {
-      groups.Tomorrow.push(task);
+    } else if (created.getTime() === yesterday.getTime()) {
+      groups.Yesterday.push(task);
+    } else if (created >= last7Days) {
+      groups["A Week Ago"].push(task);
     } else {
-      groups["This week"].push(task);
+      groups.Older.push(task);
     }
   });
 
@@ -195,6 +203,8 @@ export default function Tasks() {
     (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
   );
 
+  const groupedTasks = groupTasksByCreatedAt(sortedTasks);
+
   return (
     <div>
       <h1 className="text-3xl font-semibold text-brand-dark mb-10">My Tasks</h1>
@@ -260,87 +270,104 @@ export default function Tasks() {
       )}
 
       {/* Task list */}
-      <div className="space-y-3">
-        {Object.entries(groupTasks(sortedTasks)).map(
-          ([group, items]) => items.length > 0 && (
-            <div key={group} className="mb-10">
-              <h2 className="text-sm font-semibold text-slate-400 mb-4 uppercase">
-                {group}
-              </h2>
 
-              <div className="space-y-3">
-                {items.map(task => (
-                  <div
-                    key={task.id}
-                    className={`
-                      flex items-center justify-between p-4 rounded-xl border
-                      transition-all duration-200
-                      ${
-                        task.isCompleted
-                          ? "bg-slate-50 border-slate-200 opacity-80"
-                          : "bg-white border-slate-200 hover:shadow-md hover:-translate-y-[1px]"
-                      }
-                    `}
-                  >
-                    {/* LEFT */}
-                    <div className="flex items-center gap-4">
-                      {/* Animated checkbox */}
+    {Object.entries(groupedTasks).map(([group, items]) => {
+  if (items.length === 0) return null;
 
-                      <button
-                        onClick={() => handleToggle(task.id)}
-                        className={`
-                          relative w-7 h-7 flex items-center justify-center rounded-full
-                          border transition-colors duration-200
-                          cursor-pointer group
-                          ${
-                            task.isCompleted
-                              ? "border-brand-secondary bg-brand-secondary"
-                              : "border-brand-secondary hover:bg-brand-secondary"
-                          }
-                        `}
-                      >
-                        {task.isCompleted ? (
-                          <CircleCheckBig size={18} className="text-white" />
-                        ) : (
-                          <Check
-                            size={14}
-                            className="text-brand-dark group-hover:text-white"
-                          />
-                        )}
-                      </button>
+  return (
+    <div key={group} className="mb-10">
+      {/* GROUP HEADING */}
+      {/* <h3 className="text-xs font-semibold text-slate-500 uppercase mb-3">
+        {group}
+      </h3> */}
 
+      {/* TABLE PER GROUP */}
+      <table className="w-full border-collapse bg-white rounded-xl overflow-hidden">
+        <thead>
+          <tr className="text-xs text-slate-500 border-b bg-slate-50">
+            <th className="w-12 px-4 py-3"></th>
+             {/* GROUP NAME AS COLUMN HEADER */}
+    <th className=" text-left px-4 py-3 font-semibold">
+      {group}
+    </th>
+            <th className="text-left px-4 py-3">Task</th>
+            <th className="text-left px-4 py-3">Priority</th>
+            <th className="text-left px-4 py-3">Due date</th>
+            <th className="text-left px-4 py-3">Actions</th>
+          </tr>
+        </thead>
 
-                      <div>
-                        <p
-                          className={`text-sm font-medium ${
-                            task.isCompleted
-                              ? "line-through text-slate-400"
-                              : "text-brand-dark"
-                          }`}
-                        >
-                          {task.title}
-                        </p>
-                      </div>
-                    </div>
+        <tbody>
+          {items.map(task => (
+            <tr
+              key={task.id}
+              className={`border-b last:border-none transition ${
+                task.isCompleted
+                  ? "opacity-70"
+                  : "hover:bg-slate-50"
+              }`}
+            >
+              {/* CHECK */}
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => handleToggle(task.id)}
+                  className={`w-6 h-6 rounded-full border flex items-center justify-center transition ${
+                    task.isCompleted
+                      ? "bg-brand-secondary border-brand-secondary"
+                      : "border-slate-300 hover:bg-brand-secondary group"
+                  }`}
+                >
+                  {task.isCompleted ? (
+                    <CircleCheckBig size={16} className="text-white" />
+                  ) : (
+                    <Check
+                      size={14}
+                      className="text-slate-400 group-hover:text-white"
+                    />
+                  )}
+                </button>
+              </td>
 
-                    {/* RIGHT */}
-                    <div className="flex items-center gap-4">
-                      <PriorityBadge level={task.priority} />
+              {/* TASK TITLE */}
+              <td className="px-4 py-3 text-sm">
+                <span
+                  className={
+                    task.isCompleted
+                      ? "line-through text-slate-400"
+                      : "text-brand-dark"
+                  }
+                >
+                  {task.title}
+                </span>
+              </td>
 
-                      <button
-                        onClick={() => handleDelete(task.id)}
-                        className="text-slate-400 hover:text-red-500"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )
-        )}
-      </div>
+              {/* PRIORITY */}
+              <td className="px-4 py-3">
+                <PriorityBadge level={task.priority} />
+              </td>
+
+              {/* DUE DATE */}
+              <td className="px-4 py-3 text-sm text-slate-400">
+                {task.dueDate || "—"}
+              </td>
+
+              {/* ACTIONS */}
+              <td className="px-4 py-3 text-right">
+                <button
+                  onClick={() => handleDelete(task.id)}
+                  className="text-slate-400 hover:text-red-500"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+})}
+
       <TaskModal
         isOpen={showModal}
         title={title}
