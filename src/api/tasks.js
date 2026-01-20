@@ -31,22 +31,8 @@ export async function createTask(title, token, priority) {
   return res.json();
 }
 
-export async function updateTaskPriority(id, priority, token) {
-  const res = await fetch(`${API_URL}/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ priority }),
-  });
-
-  if (!res.ok) throw new Error("Failed to update priority");
-  return res.json();
-}
-
-export async function completeTask(id, token) {
-  const res = await fetch(`${API_URL}/${id}/complete`, {
+export async function toggleTask(id, token) {
+  const res = await fetch(`${API_URL}/${id}/toggle`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -54,11 +40,12 @@ export async function completeTask(id, token) {
   });
 
   if (!res.ok) {
-    throw new Error("Failed to complete task");
+    throw new Error("Failed to toggle task");
   }
 
   return res.json();
 }
+
 
 export async function deleteTask(id, token) {
   const res = await fetch(`${API_URL}/${id}`, {
