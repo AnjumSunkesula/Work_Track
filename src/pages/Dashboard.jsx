@@ -17,6 +17,46 @@ function buildActivity(task) {
   };
 }
 
+function getRelativeTime(date) {
+  const now = new Date();
+  const diffMs = now - new Date(date);
+  const diffMin = Math.floor(diffMs / 60000);
+
+  if (diffMin < 1) return "Just now";
+  if (diffMin < 60) return `${diffMin} min ago`;
+
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr} hr ago`;
+
+  return new Date(date).toLocaleDateString();
+}
+
+function groupByDay(tasks) {
+  const groups = {
+    Today: [],
+    Yesterday: [],
+    Earlier: [],
+  };
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  tasks.forEach(task => {
+    const date = new Date(task.createdAt);
+
+    if (date.toDateString() === today.toDateString()) {
+      groups.Today.push(task);
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      groups.Yesterday.push(task);
+    } else {
+      groups.Earlier.push(task);
+    }
+  });
+
+  return groups;
+}
+
 
 export default function Dashboard() {
 
@@ -154,42 +194,49 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
             <h2 className="font-medium text-brand-dark mb-4">Activity</h2>
             {recentTasks.length === 0 ? (
-              <p className="text-sm text-slate-500">
-                No recent activity.
-              </p>
+              <p className="text-sm text-slate-500">No recent activity.</p>
             ) : (
-              <ul className="space-y-4">
-                {recentTasks.map(task => {
-                  const activity = buildActivity(task);
+              Object.entries(
+                groupByDay(recentTasks.map(buildActivity))
+              ).map(([group, items]) =>
+                items.length > 0 && (
+                  <div key={group} className="mb-6">
+                    <p className="text-xs font-semibold text-slate-400 mb-3 uppercase">
+                      {group}
+                    </p>
 
-                  return (
-                    <li
-                      key={task.id}
-                      className="flex items-start gap-3"
-                    >
-                      {/* Icon */}
-                      <span className={`mt-1 text-sm ${
-                        activity.type === "completed"
-                          ? "text-green-500"
-                          : "text-brand-dark"
-                      }`}>
-                        {activity.type === "completed" ? "✔" : "➕"}
-                      </span>
+                    <ul className="space-y-4">
+                      {items.map(activity => (
+                        <li
+                          key={activity.id}
+                          className="flex items-start gap-3"
+                        >
+                          {/* Icon */}
+                          <span
+                            className={`mt-1 text-sm ${
+                              activity.type === "completed"
+                                ? "text-green-500"
+                                : "text-brand-dark"
+                            }`}
+                          >
+                            {activity.type === "completed" ? "✔" : "➕"}
+                          </span>
 
-                      {/* Text */}
-                      <div className="flex-1">
-                        <p className="text-sm text-brand-dark">
-                          {activity.text}
-                        </p>
-
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          {new Date(activity.time).toLocaleString()}
-                        </p>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
+                          {/* Text */}
+                          <div className="flex-1">
+                            <p className="text-sm text-brand-dark">
+                              {activity.text}
+                            </p>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              {getRelativeTime(activity.time)}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
+              )
             )}
           </div>
         </div>
