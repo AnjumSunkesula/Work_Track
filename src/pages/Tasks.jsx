@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
-import { getTasks, createTask, completeTask, deleteTask, updateTaskPriority } from "../api/tasks";
+import { getTasks, createTask, completeTask, deleteTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
-import { CheckCircle2, Trash2, SlidersHorizontal, Plus  } from "lucide-react";
+import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus  } from "lucide-react";
 import PriorityBadge from "../components/PriorityBadge";
-import { useRef } from "react";
 
-
-function getRelativeTime(utcDateString) {
-  if (!utcDateString) return "";
-  const date = new Date(utcDateString + "Z");
-  return date.toLocaleString();
-}
 
 function groupTasks(tasks) {
   const now = new Date();
@@ -28,12 +21,7 @@ function groupTasks(tasks) {
   };
 
   tasks.forEach(task => {
-    const date = new Date(
-      task.isCompleted && task.completedAt
-        ? task.completedAt
-        : task.createdAt
-    );
-
+    const date = new Date(task.createdAt);
     if (date >= today && date < tomorrow) {
       groups.Today.push(task);
     } else if (date >= tomorrow && date < endOfWeek) {
@@ -109,18 +97,18 @@ function TaskFilter({ value, onChange }) {
 
 export default function Tasks() {
   const { token } = useAuth();
-  const inputRef = useRef(null);
 
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
   const [filter,setFilter] = useState("all");
   const [loadingTasks, setLoadingTasks] = useState(true);
-  const [actionLoading, setActionLoading] = useState({});
   const [priority, setPriority] = useState("MED");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
+  // for future use
+  const [actionLoading, setActionLoading] = useState({});
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
 
@@ -153,17 +141,6 @@ export default function Tasks() {
     }
   };
 
-  // edit/update priority badge
-  // const handlePriorityChange = async (id, newPriority) => {
-  //   try {
-  //     const updated = await updateTaskPriority(id, newPriority, token);
-  //     setTasks(tasks.map(t => (t.id === id ? updated : t)));
-  //   } catch {
-  //     setError("Failed to update priority");
-  //   }
-  // };
-
-
   const handleComplete = async (id) => {
     setActionLoading(prev => ({ ...prev, [id]: true }));
 
@@ -194,12 +171,21 @@ export default function Tasks() {
   };
   
   const filteredTasks = tasks.filter(t => {
-    if (!t.title.toLowerCase().includes(search.toLowerCase())) return false;
+    const title = t.title ?? "";
+
+    if (!title.toLowerCase().includes(search.toLowerCase())) return false;
     if (filter === "active" && t.isCompleted) return false;
     if (filter === "completed" && !t.isCompleted) return false;
     if (priorityFilter !== "ALL" && t.priority !== priorityFilter) return false;
     return true;
   });
+
+  useEffect(() => {
+    tasks.forEach(t => {
+      if (!t.title) console.warn("Task without title:", t);
+    });
+  }, [tasks]);
+
 
   const priorityOrder = { HIGH: 1, MED: 2, LOW: 3 };
 
@@ -217,7 +203,7 @@ export default function Tasks() {
     placeholder="Search tasks..."
     value={search}
     onChange={(e) => setSearch(e.target.value)}
-    className="w-full max-w-5xl rounded-lg border border-slate-300 px-3 py-2 text-sm
+    className="w-full max-w-4xl rounded-lg border border-slate-300 px-3 py-2 text-sm
                focus:outline-none focus:ring-1 focus:ring-brand-secondary"
   />
 
@@ -302,20 +288,48 @@ export default function Tasks() {
               <div className="flex items-center gap-4">
                 {/* Animated checkbox */}
                 <button
-                  onClick={() => handleComplete(task.id)}
-                  disabled={task.isCompleted || actionLoading[task.id]}
-                  className={`
-                    w-6 h-6 flex items-center justify-center rounded-full border
-                    transition-all duration-300
-                    ${
-                      task.isCompleted
-                        ? "bg-green-500 border-green-500 text-white scale-110"
-                        : "border-slate-400 hover:border-green-500 hover:scale-105"
-                    }
-                  `}
-                >
-                  {task.isCompleted && <CheckCircle2 size={16} />}
-                </button>
+  onClick={() => handleComplete(task.id)}
+  disabled={task.isCompleted}
+  className={`
+    relative w-7 h-7 flex items-center justify-center rounded-full
+    border transition-all duration-300
+    cursor-pointer group
+    ${
+      task.isCompleted
+        ? "border-brand-secondary bg-brand-secondary"
+        : "border-brand-secondary hover:bg-brand-secondary"
+    }
+  `}
+>
+  {/* Initial tick */}
+  <Check
+    size={14}
+    className={`
+      absolute transition-all duration-300
+      pointer-events-none
+      ${
+        task.isCompleted
+          ? "opacity-0 scale-50 rotate-90"
+          : "opacity-100 scale-100 text-brand-dark group-hover:text-white"
+      }
+    `}
+  />
+
+  {/* Completed icon */}
+  <CircleCheckBig
+    size={18}
+    className={`
+      absolute transition-all duration-500
+      pointer-events-none
+      ${
+        task.isCompleted
+          ? "opacity-100 scale-100 rotate-0 text-white"
+          : "opacity-0 scale-50 -rotate-90"
+      }
+    `}
+  />
+</button>
+
 
                 <div>
                   <p
