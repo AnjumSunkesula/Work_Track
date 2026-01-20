@@ -14,20 +14,34 @@ export async function getTasks(token) {
   return res.json();
 }
 
-export async function createTask(title, token) {
+export async function createTask(title, token, priority) {
   const res = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, priority }),
   });
 
   if (!res.ok) {
     throw new Error("Failed to create task");
   }
 
+  return res.json();
+}
+
+export async function updateTaskPriority(id, priority, token) {
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ priority }),
+  });
+
+  if (!res.ok) throw new Error("Failed to update priority");
   return res.json();
 }
 
