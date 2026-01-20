@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTasks, createTask, completeTask, deleteTask } from "../api/tasks";
+import { getTasks, createTask, deleteTask, toggleTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus  } from "lucide-react";
 import PriorityBadge from "../components/PriorityBadge";
@@ -44,8 +44,7 @@ function TaskFilter({ value, onChange }) {
     { label: "High", value: "HIGH" },
   ];
 
-  const currentLabel =
-    options.find(o => o.value === value)?.label;
+  const currentLabel = options.find(o => o.value === value)?.label;
 
   return (
     <div className="relative">
@@ -141,18 +140,18 @@ export default function Tasks() {
     }
   };
 
-  const handleComplete = async (id) => {
-    setActionLoading(prev => ({ ...prev, [id]: true }));
+  const handleToggle = async (id) => {
+    try {
+      const updated = await toggleTask(id, token);
 
-    try{
-      const updated = await completeTask(id, token);
       setTasks(tasks.map(t => (t.id === id ? updated : t)));
 
       localStorage.setItem("refreshDashboardStats", Date.now().toString());
-    } finally {
-      setActionLoading(prev => ({...prev, [id]: false}));
+    } catch {
+      setError("Failed to update task");
     }
   };
+
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm("Are you sure you want to delete the selected task?")
@@ -196,35 +195,32 @@ export default function Tasks() {
   return (
     <div>
       <h1 className="text-3xl font-semibold text-brand-dark mb-10">My Tasks</h1>
-
       <div className="flex items-center justify-between mb-6">
-  <input
-    type="text"
-    placeholder="Search tasks..."
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    className="w-full max-w-4xl rounded-lg border border-slate-300 px-3 py-2 text-sm
-               focus:outline-none focus:ring-1 focus:ring-brand-secondary"
-  />
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full max-w-4xl rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-secondary"
+        />
 
- <div className="flex items-center gap-3 relative">
-    <TaskFilter
-      value={priorityFilter}
-      onChange={setPriorityFilter}
-    />
+        <div className="flex items-center gap-3 relative">
+          <TaskFilter
+            value={priorityFilter}
+            onChange={setPriorityFilter}
+          />
 
-    <button
-      onClick={() => setShowModal(true)}
-      className="px-4 py-2 rounded-lg bg-brand-accent
-                 text-brand-dark font-semibold text-md hover:text-white hover:bg-brand-dark hover:opacity-90"
-    >
-      <div className="flex gap-2 items-center">
-        <Plus />
-        New Task
-      </div> 
-    </button>
-  </div>
-</div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold text-md hover:text-white hover:bg-brand-dark hover:opacity-90"
+          >
+            <div className="flex gap-2 items-center">
+              <Plus />
+              New Task
+            </div> 
+          </button>
+        </div>
+      </div>
 
 
       {/* Filters */}
@@ -252,7 +248,7 @@ export default function Tasks() {
 
       {!loadingTasks && filteredTasks.length === 0 && (
         <p className="text-sm text-slate-500">
-          No tasks found.
+          No Tasks Found.
         </p>
       )}
 
@@ -263,186 +259,153 @@ export default function Tasks() {
       {/* Task list */}
       <div className="space-y-3">
         {Object.entries(groupTasks(sortedTasks)).map(
-  ([group, items]) =>
-    items.length > 0 && (
-      <div key={group} className="mb-10">
-        <h2 className="text-sm font-semibold text-slate-400 mb-4 uppercase">
-          {group}
-        </h2>
+          ([group, items]) => items.length > 0 && (
+            <div key={group} className="mb-10">
+              <h2 className="text-sm font-semibold text-slate-400 mb-4 uppercase">
+                {group}
+              </h2>
 
-        <div className="space-y-3">
-          {items.map(task => (
-            <div
-              key={task.id}
-              className={`
-                flex items-center justify-between p-4 rounded-xl border
-                transition-all duration-200
-                ${
-                  task.isCompleted
-                    ? "bg-slate-50 border-slate-200 opacity-80"
-                    : "bg-white border-slate-200 hover:shadow-md hover:-translate-y-[1px]"
-                }
-              `}
-            >
-              {/* Left */}
-              <div className="flex items-center gap-4">
-                {/* Animated checkbox */}
-                <button
-  onClick={() => handleComplete(task.id)}
-  disabled={task.isCompleted}
-  className={`
-    relative w-7 h-7 flex items-center justify-center rounded-full
-    border transition-all duration-300
-    cursor-pointer group
-    ${
-      task.isCompleted
-        ? "border-brand-secondary bg-brand-secondary"
-        : "border-brand-secondary hover:bg-brand-secondary"
-    }
-  `}
->
-  {/* Initial tick */}
-  <Check
-    size={14}
-    className={`
-      absolute transition-all duration-300
-      pointer-events-none
-      ${
-        task.isCompleted
-          ? "opacity-0 scale-50 rotate-90"
-          : "opacity-100 scale-100 text-brand-dark group-hover:text-white"
-      }
-    `}
-  />
-
-  {/* Completed icon */}
-  <CircleCheckBig
-    size={18}
-    className={`
-      absolute transition-all duration-500
-      pointer-events-none
-      ${
-        task.isCompleted
-          ? "opacity-100 scale-100 rotate-0 text-white"
-          : "opacity-0 scale-50 -rotate-90"
-      }
-    `}
-  />
-</button>
-
-
-                <div>
-                  <p
-                    className={`text-sm font-medium ${
-                      task.isCompleted
-                        ? "line-through text-slate-400"
-                        : "text-brand-dark"
-                    }`}
+              <div className="space-y-3">
+                {items.map(task => (
+                  <div
+                    key={task.id}
+                    className={`
+                      flex items-center justify-between p-4 rounded-xl border
+                      transition-all duration-200
+                      ${
+                        task.isCompleted
+                          ? "bg-slate-50 border-slate-200 opacity-80"
+                          : "bg-white border-slate-200 hover:shadow-md hover:-translate-y-[1px]"
+                      }
+                    `}
                   >
-                    {task.title}
-                  </p>
+                    {/* LEFT */}
+                    <div className="flex items-center gap-4">
+                      {/* Animated checkbox */}
 
-                  {/* <p className="text-xs text-slate-400 mt-1">
-                    Created: {getRelativeTime(task.createdAt)}
-                    {task.isCompleted && (
-                      <> · Completed: {getRelativeTime(task.completedAt)}</>
-                    )}
-                  </p> */}
-                </div>
-              </div>
+                      <button
+                        onClick={() => handleToggle(task.id)}
+                        className={`
+                          relative w-7 h-7 flex items-center justify-center rounded-full
+                          border transition-colors duration-200
+                          cursor-pointer group
+                          ${
+                            task.isCompleted
+                              ? "border-brand-secondary bg-brand-secondary"
+                              : "border-brand-secondary hover:bg-brand-secondary"
+                          }
+                        `}
+                      >
+                        {task.isCompleted ? (
+                          <CircleCheckBig size={18} className="text-white" />
+                        ) : (
+                          <Check
+                            size={14}
+                            className="text-brand-dark group-hover:text-white"
+                          />
+                        )}
+                      </button>
 
-              {/* Right */}
-              <div className="flex items-center gap-4">
-                <PriorityBadge level={task.priority} />
 
-                <button
-                  onClick={() => handleDelete(task.id)}
-                  className="text-slate-400 hover:text-red-500"
-                >
-                  <Trash2 size={16} />
-                </button>
+                      <div>
+                        <p
+                          className={`text-sm font-medium ${
+                            task.isCompleted
+                              ? "line-through text-slate-400"
+                              : "text-brand-dark"
+                          }`}
+                        >
+                          {task.title}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* RIGHT */}
+                    <div className="flex items-center gap-4">
+                      <PriorityBadge level={task.priority} />
+
+                      <button
+                        onClick={() => handleDelete(task.id)}
+                        className="text-slate-400 hover:text-red-500"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-    )
-)}
-
+          )
+        )}
       </div>
 
       {showModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-    <div className="bg-white w-full max-w-lg rounded-2xl p-6 shadow-xl">
-      
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-brand-dark">
-          New task
-        </h2>
-        <button
-          onClick={() => setShowModal(false)}
-          className="text-slate-400 hover:text-brand-dark"
-        >
-          ✕
-        </button>
-      </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white w-full max-w-lg rounded-2xl p-6 shadow-xl">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-brand-dark">
+                New task
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-slate-400 hover:text-brand-dark"
+              >
+                ✕
+              </button>
+            </div>
 
-      {/* Title */}
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Name of task"
-        className="w-full mb-4 rounded-lg border px-3 py-2 text-sm
-                   focus:outline-none focus:ring-1 focus:ring-brand-secondary"
-      />
+            {/* Title */}
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Name of task"
+              className="w-full mb-4 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-secondary"
+            />
 
-      {/* Priority + Due date */}
-      <div className="flex gap-3 mb-4">
-        <select
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
-          className="rounded-lg border px-3 py-2 text-sm bg-white"
-        >
-          <option value="LOW">Low</option>
-          <option value="MED">Medium</option>
-          <option value="HIGH">High</option>
-        </select>
+            {/* Priority + Due date */}
+            <div className="flex gap-3 mb-4">
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="rounded-lg border px-3 py-2 text-sm bg-white"
+              >
+                <option value="LOW">Low</option>
+                <option value="MED">Medium</option>
+                <option value="HIGH">High</option>
+              </select>
 
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          className="rounded-lg border px-3 py-2 text-sm"
-        />
-      </div>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="rounded-lg border px-3 py-2 text-sm"
+              />
+            </div>
 
-      {/* Description */}
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description (optional)"
-        rows={4}
-        className="w-full rounded-lg border px-3 py-2 text-sm
-                   focus:outline-none focus:ring-1 focus:ring-brand-secondary"
-      />
+            {/* Description */}
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Description (optional)"
+              rows={4}
+              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-secondary"
+            />
 
-      {/* Footer */}
-      <div className="flex justify-end mt-6">
-        <button
-          onClick={handleAdd}
-          disabled={!title.trim()}
-          className="px-4 py-2 rounded-lg bg-brand-accent
-                     text-brand-dark font-semibold
-                     disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Create task
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+            {/* Footer */}
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={handleAdd}
+                disabled={!title.trim()}
+                className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Create task
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
