@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { getTasks, createTask, completeTask, deleteTask } from "../api/tasks";
+import { getTasks, createTask, completeTask, deleteTask, updateTaskPriority } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
 import { CheckCircle2, Trash2 } from "lucide-react";
+import PriorityBadge from "../components/PriorityBadge";
 
 function formatDate(dateString) {
   if (!dateString) return "";
@@ -17,8 +18,8 @@ export default function Tasks() {
   const [filter,setFilter] = useState("all");
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [actionLoading, setActionLoading] = useState({});
-
-  const trimmedTitle = title.trim();
+  const [priority, setPriority] = useState("MED");
+  const [priorityFilter, setPriorityFilter] = useState("ALL");
 
   useEffect(() => {
     if (!token) return;
@@ -33,17 +34,28 @@ export default function Tasks() {
   const handleAdd = async (e) => {
     e.preventDefault();
 
-    const trimmed = title.trim();
-    if (!trimmed) return;
+    if (!title.trim()) return;
     
     try {
-      const newTask = await createTask(title, token);
+      const newTask = await createTask(title, token, priority);
       setTasks([...tasks, newTask]);
       setTitle("");
+      setPriority("MED");
     } catch {
       setError("Failed to add task");
     }
   };
+
+  // edit/update priority badge
+  // const handlePriorityChange = async (id, newPriority) => {
+  //   try {
+  //     const updated = await updateTaskPriority(id, newPriority, token);
+  //     setTasks(tasks.map(t => (t.id === id ? updated : t)));
+  //   } catch {
+  //     setError("Failed to update priority");
+  //   }
+  // };
+
 
   const handleComplete = async (id) => {
     setActionLoading(prev => ({ ...prev, [id]: true }));
@@ -73,12 +85,19 @@ export default function Tasks() {
       setActionLoading(prev => ({ ...prev, [id]: false }));
     }
   };
-
+  
   const filteredTasks = tasks.filter(t => {
-    if (filter === "active") return !t.isCompleted;
-    if (filter === "completed") return t.isCompleted;
+    if (filter === "active" && t.isCompleted) return false;
+    if (filter === "completed" && !t.isCompleted) return false;
+    if (priorityFilter !== "ALL" && t.priority !== priorityFilter) return false;
     return true;
   });
+
+  const priorityOrder = { HIGH: 1, MED: 2, LOW: 3 };
+
+  const sortedTasks = [...filteredTasks].sort(
+    (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+  );
 
   return (
     <div>
@@ -109,9 +128,30 @@ export default function Tasks() {
           placeholder="Add a new task..."
           className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-brand-secondary"
         />
+        <select
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+          className="rounded-lg border border-slate-300 px-2 py-2 text-sm bg-white focus:outline-none"
+        >
+          <option value="LOW">LOW</option>
+          <option value="MED">MED</option>
+          <option value="HIGH">HIGH</option>
+        </select>
+
+        <select
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+          className="rounded-lg border px-2 py-1 text-sm"
+        >
+          <option value="ALL">All priorities</option>
+          <option value="LOW">Low</option>
+          <option value="MED">Medium</option>
+          <option value="HIGH">High</option>
+        </select>
+
         <button
           disabled={!title.trim()}
-          className="p-2 rounded-lg bg-brand-accent text-brand-dark font-semibold text-lg disabled:opacity-50"
+          className="p-2 rounded-lg bg-brand-accent text-brand-dark font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Add
         </button>
@@ -134,7 +174,7 @@ export default function Tasks() {
 
       {/* Task list */}
       <div className="space-y-3">
-        {filteredTasks.map(task => (
+        {sortedTasks.map(task => (
           <div
             key={task.id}
             className={`flex items-center justify-between p-4 rounded-xl border transition
@@ -173,6 +213,8 @@ export default function Tasks() {
                     <> · Completed: {formatDate(task.completedAt)}</>
                   )}
                 </p>
+
+                <PriorityBadge level={task.priority} />
               </div>
             </div>
 
