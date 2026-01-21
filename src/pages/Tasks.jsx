@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getTasks, createTask, deleteTask, toggleTask } from "../api/tasks";
+import { getTasks, createTask, deleteTask, toggleTask, updateTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
-import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus  } from "lucide-react";
+import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus, PenLine, PencilLine  } from "lucide-react";
 import PriorityBadge from "../components/PriorityBadge";
 import TaskModal from "../components/TaskModal";
 
@@ -116,12 +116,20 @@ export default function Tasks() {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [expandedTaskId, setExpandedTaskId] = useState(null);
-  // for future use
   const [actionLoading, setActionLoading] = useState({});
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [editingTask, setEditingTask] = useState(null);
 
-  
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingTask(null);
+    setTitle("");
+    setPriority("MED");
+    setDescription("");
+    setDueDate("");
+  };
+
 
 
   useEffect(() => {
@@ -135,24 +143,41 @@ export default function Tasks() {
   }, [token]);
 
   const handleAdd = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
-    if (!title.trim()) return;
+    if (!title.trim() || !dueDate) return;
     
     try {
       const newTask = await createTask(title, token, priority, description, dueDate);
-      setTasks([...tasks, newTask]);
+      setTasks(prev => [...prev, newTask]);
+      closeModal();
 
-      setTitle("");
-      setPriority("MED");
-      setDescription("");
-      setDueDate("");
-      setShowModal(false);
     } catch {
       setError("Failed to add task");
     }
   };
 
+  const handleUpdate = async () => {
+    if (!editingTask) return;
+
+    try {
+      const updated = await updateTask(editingTask.id, token, {
+        title,
+        priority,
+        description,
+        dueDate,
+      });
+
+      setTasks(tasks.map(t => (t.id === updated.id ? updated : t)));
+
+      setEditingTask(null);
+      setShowModal(false);
+    } catch {
+      setError("Failed to update task");
+    }
+  };
+
+  // undo a completed task or complete an active task
   const handleToggle = async (id) => {
     try {
       const updated = await toggleTask(id, token);
@@ -226,7 +251,10 @@ export default function Tasks() {
           />
 
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setEditingTask(null);
+              setShowModal(true);
+            }}
             className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold text-md hover:text-white hover:bg-brand-dark hover:opacity-90"
           >
             <div className="flex gap-2 items-center">
@@ -362,18 +390,35 @@ export default function Tasks() {
 
                       {/* DUE DATE */}
                       <td className="px-4 py-3 text-sm text-slate-400 text-center">
-                        {task.dueDate || "—"}
+                         {task.dueDate
+    ? new Date(task.dueDate).toLocaleDateString()
+    : "—"}
                       </td>
 
                       {/* ACTIONS */}
-                      <td className="px-4 py-3 text-center">
-                        <button
-                          onClick={() => handleDelete(task.id)}
-                          className="text-slate-400 hover:text-red-500"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </td>
+                      <td className="px-4 py-3 text-center flex justify-center gap-3">
+  {/* EDIT */}
+  <button
+    onClick={() => {
+      setEditingTask(task);
+      setShowModal(true);
+    }}
+    className="text-slate-400 hover:text-brand-primary"
+    title="Edit task"
+  >
+    <PenLine size={16} />
+  </button>
+
+  {/* DELETE */}
+  <button
+    onClick={() => handleDelete(task.id)}
+    className="text-slate-400 hover:text-red-500"
+    title="Delete task"
+  >
+    <Trash2 size={16} />
+  </button>
+</td>
+
                     </tr>
                     {expandedTaskId === task.id && (
                       <tr className="bg-slate-50 transition-all duration-200">
@@ -402,7 +447,7 @@ export default function Tasks() {
       <TaskModal
         isOpen={showModal}
         title={title}
-        onClose={() => setShowModal(false)}
+        onClose={closeModal}
         setTitle={setTitle}
         priority={priority}
         setPriority={setPriority}
@@ -411,6 +456,8 @@ export default function Tasks() {
         dueDate={dueDate}
         setDueDate={setDueDate}
         handleAdd={handleAdd}
+        task={editingTask}
+        onSave={editingTask ? handleUpdate : handleAdd}
       />
     </div>
   );
