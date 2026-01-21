@@ -70,7 +70,7 @@ export default function TaskModal({isOpen, onClose, title, setTitle, priority, s
           <button
             type="submit"
             disabled={!title || !title.trim()}
-            className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-dark hover:text-white"
           >
             Create task
           </button>
