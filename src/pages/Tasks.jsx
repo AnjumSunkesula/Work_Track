@@ -101,6 +101,33 @@ function TaskFilter({ value, onChange }) {
   );
 }
 
+function getTaskStatus(task) {
+  if (task.isCompleted) {
+    return { label: "Completed", color: "bg-green-200 text-green-700" };
+  }
+
+  if (!task.dueDate) {
+    return { label: "Not Started", color: "bg-slate-200 text-slate-600" };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const due = new Date(task.dueDate);
+  due.setHours(0, 0, 0, 0);
+
+  if (due < today) {
+    return { label: "Overdue", color: "bg-red-200 text-red-700" };
+  }
+
+  if (due.getTime() === today.getTime()) {
+    return { label: "Due Today", color: "bg-orange-200 text-orange-700" };
+  }
+
+  return { label: "In Progress", color: "bg-blue-200 text-blue-700" };
+}
+
+
 
 
 export default function Tasks() {
@@ -308,7 +335,8 @@ export default function Tasks() {
             <table className="w-full border-collapse bg-white rounded-xl overflow-hidden">
               <colgroup>
                 <col className="w-12" />          
-                <col />                          
+                <col />  
+                <col className="w-32" />                        
                 <col className="w-32" />          
                 <col className="w-40" />          
                 <col className="w-20" />          
@@ -322,6 +350,7 @@ export default function Tasks() {
                   <th className=" text-left px-4 py-3 font-semibold">
                     {group}
                   </th>
+                  <th className="text-center px-4 py-3">Status</th>
                   <th className="text-center px-4 py-3">Priority</th>
                   <th className="text-center px-4 py-3">Due date</th>
                   <th className="text-center px-4 py-3">Actions</th>
@@ -383,6 +412,20 @@ export default function Tasks() {
                         </span>
                       </td>
 
+                      {/* STATUS */}
+                      <td className="px-4 py-3 text-center">
+                        {(() => {
+                          const status = getTaskStatus(task);
+                          return (
+                            <span
+                              className={`inline-flex items-center justify-center px-3 py-1 min-w-[87px] rounded-full text-xs font-medium whitespace-nowrap ${status.color}`}
+                            >
+                              {status.label}
+                            </span>
+                          );
+                        })()}
+                      </td>
+
                       {/* PRIORITY */}
                       <td className="px-4 py-3 text-center">
                         <PriorityBadge level={task.priority} />
@@ -390,36 +433,34 @@ export default function Tasks() {
 
                       {/* DUE DATE */}
                       <td className="px-4 py-3 text-sm text-slate-400 text-center">
-                         {task.dueDate
-    ? new Date(task.dueDate).toLocaleDateString()
-    : "—"}
+                        {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "—"}
                       </td>
 
                       {/* ACTIONS */}
                       <td className="px-4 py-3 text-center flex justify-center gap-3">
-  {/* EDIT */}
-  <button
-    onClick={() => {
-      setEditingTask(task);
-      setShowModal(true);
-    }}
-    className="text-slate-400 hover:text-brand-primary"
-    title="Edit task"
-  >
-    <PenLine size={16} />
-  </button>
+                        {/* EDIT */}
+                        <button
+                          onClick={() => {
+                            setEditingTask(task);
+                            setShowModal(true);
+                          }}
+                          className="text-slate-400 hover:text-brand-primary"
+                          title="Edit task"
+                        >
+                          <PenLine size={16} />
+                        </button>
 
-  {/* DELETE */}
-  <button
-    onClick={() => handleDelete(task.id)}
-    className="text-slate-400 hover:text-red-500"
-    title="Delete task"
-  >
-    <Trash2 size={16} />
-  </button>
-</td>
-
+                        {/* DELETE */}
+                        <button
+                          onClick={() => handleDelete(task.id)}
+                          className="text-slate-400 hover:text-red-500"
+                          title="Delete task"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
                     </tr>
+
                     {expandedTaskId === task.id && (
                       <tr className="bg-slate-50 transition-all duration-200">
                         <td></td>
