@@ -7,14 +7,18 @@ export default function HomeLayout() {
       
       {/* Liquid Chrome Background */}
       <div className="absolute inset-0 -z-10">
-        <LiquidChrome
-          baseColor={[0.7, 0.8, 0.6]} // green > beige balance
-          speed={0.4}
-          blur={0.35}
+         <LiquidChrome
+          baseColor={[0.78, 0.85, 0.62]} // green-ish
+          amplitude={0.35}
+          speed={0.6}
+          interactive={true}
         />
       </div>
 
-      {/* Page content */}
+      {/* Dark overlay to reduce brightness */}
+      <div className="absolute inset-0 bg-black/30 -z-10" />
+
+      {/* Page content (Login / Register) */}
       <div className="relative z-10 flex min-h-screen items-center justify-center">
         <Outlet />
       </div>

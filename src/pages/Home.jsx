@@ -1,38 +1,25 @@
-import { useState } from "react";
-import Login from "../components/auth/Login";
-import Register from "../components/auth/Register";
-import AuthGlassCard from "../components/auth/AuthGlassCard";
+import AuthCard from "../components/auth/AuthCard"
 
 export default function Home() {
-  const [mode, setMode] = useState("login");
-
   return (
-    <AuthGlassCard>
-      <div className="flex justify-center mb-6">
-        <button
-          onClick={() => setMode("login")}
-          className={`px-4 py-2 text-sm font-medium rounded-l-lg
-            ${mode === "login"
-              ? "bg-white text-brand-dark"
-              : "bg-white/30 text-white"}
-          `}
-        >
-          Login
-        </button>
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 px-6">
 
-        <button
-          onClick={() => setMode("register")}
-          className={`px-4 py-2 text-sm font-medium rounded-r-lg
-            ${mode === "register"
-              ? "bg-white text-brand-dark"
-              : "bg-white/30 text-white"}
-          `}
-        >
-          Register
-        </button>
+      {/* LEFT SIDE */}
+      <div className="hidden md:flex flex-col justify-center text-white pr-12">
+        <h1 className="text-5xl font-bold leading-tight mb-6">
+          Work smarter.<br />Track better.
+        </h1>
+
+        <p className="text-lg text-white/80 max-w-md">
+          Manage your tasks, priorities, and productivity in one place.
+          Stay organized and focused every day.
+        </p>
       </div>
 
-      {mode === "login" ? <Login /> : <Register />}
-    </AuthGlassCard>
+      {/* RIGHT SIDE */}
+      <div className="flex items-center justify-center">
+        <AuthCard />
+      </div>
+    </div>
   );
 }

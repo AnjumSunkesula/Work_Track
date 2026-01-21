@@ -1,40 +1,44 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-// import Register from './pages/Register';
-// import Login from './pages/login';
 import ProtectedRoute from "./components/ProtectedRoute";
-import LogoutButton from "./components/LogoutButton";
-import Tasks from "./pages/Tasks";
-import Dashboard from "./pages/Dashboard";
-import DashboardLayout from "./layouts/DashboardLayout";
+
 import HomeLayout from "./layouts/HomeLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
+
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
+import Dashboard from "./pages/Dashboard";
+import Tasks from "./pages/Tasks";
 
 function App() {
-
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-           <Route element={<HomeLayout />}>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Route>
+
+          {/* HOME (Login / Register) */}
+          <Route element={<HomeLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
+
+          {/* PROTECTED APP */}
           <Route
             path="/"
             element={
               <ProtectedRoute>
-                <DashboardLayout/>
+                <DashboardLayout />
               </ProtectedRoute>
             }
           >
             <Route index element={<Dashboard />} />
             <Route path="tasks" element={<Tasks />} />
           </Route>
+
         </Routes>
       </AuthProvider>
     </BrowserRouter>
-  )
+  );
 }
-export default App
+
+export default App;
