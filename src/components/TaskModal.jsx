@@ -51,6 +51,7 @@ export default function TaskModal({isOpen, onClose, title, setTitle, priority, s
           <input
             type="date"
             value={dueDate}
+            min={new Date().toISOString().split("T")[0]}
             onChange={(e) => setDueDate(e.target.value)}
             className="rounded-lg border px-3 py-2 text-sm"
           />
