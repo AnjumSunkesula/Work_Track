@@ -31,6 +31,23 @@ export async function createTask(title, token, priority, description, dueDate) {
   return res.json();
 }
 
+export async function updateTask(id, token, data) {
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to update task");
+  }
+
+  return res.json();
+}
+
 export async function toggleTask(id, token) {
   const res = await fetch(`${API_URL}/${id}/toggle`, {
     method: "PUT",
