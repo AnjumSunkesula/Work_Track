@@ -1,23 +1,39 @@
 import {X} from "lucide-react";
+import { useEffect } from "react";
 
-export default function TaskModal({isOpen, onClose, title, setTitle, priority, setPriority, description, setDescription, dueDate, setDueDate, handleAdd}) {
+export default function TaskModal({isOpen, task, onClose, title, setTitle, priority, setPriority, description, setDescription, dueDate, setDueDate, onSave}) {
 
   if (!isOpen) return null;
+
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setPriority(task.priority);
+      setDescription(task.description ?? "");
+      setDueDate(task.dueDate?.split("T")[0] ?? "");
+    } else {
+      setTitle("");
+      setPriority("MED");
+      setDescription("");
+      setDueDate("");
+    }
+  }, [task]);
+
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
       onClick={onClose}   // ⬅ click outside closes modal
     >
-      <form
-        onSubmit={handleAdd}
+      <div
+        // onSubmit={onSave}
         className="bg-white w-full max-w-lg rounded-2xl p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()} // ⬅ prevent close when clicking inside
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-brand-dark">
-            New task
+            {task ? "Edit Task" : "New Task"}
           </h2>
           <button
             type="button"
@@ -74,14 +90,15 @@ export default function TaskModal({isOpen, onClose, title, setTitle, priority, s
         {/* Footer */}
         <div className="flex justify-end mt-6">
           <button
-            type="submit"
-            disabled={!title || !title.trim() || !dueDate}
+            type="button"
+            onClick={onSave}
+            disabled={!title.trim() || !dueDate}
             className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-dark hover:text-white"
           >
-            Create task
+            {task ? "Save Changes" : "Create Task"}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
