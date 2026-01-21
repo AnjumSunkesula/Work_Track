@@ -54,6 +54,11 @@ export default function TaskModal({isOpen, onClose, title, setTitle, priority, s
             onChange={(e) => setDueDate(e.target.value)}
             className="rounded-lg border px-3 py-2 text-sm"
           />
+          {!dueDate && (
+            <p className="text-xs text-red-500 mt-1 text-center flex items-center">
+              Due date is required
+            </p>
+          )}
         </div>
 
         {/* Description */}
@@ -69,7 +74,7 @@ export default function TaskModal({isOpen, onClose, title, setTitle, priority, s
         <div className="flex justify-end mt-6">
           <button
             type="submit"
-            disabled={!title || !title.trim()}
+            disabled={!title || !title.trim() || !dueDate}
             className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-dark hover:text-white"
           >
             Create task
