@@ -270,103 +270,103 @@ export default function Tasks() {
       )}
 
       {/* Task list */}
+      {Object.entries(groupedTasks).map(([group, items]) => {
+        if (items.length === 0) return null;
 
-    {Object.entries(groupedTasks).map(([group, items]) => {
-  if (items.length === 0) return null;
+        return (
+          <div key={group} className="mb-10">
+            <table className="w-full border-collapse bg-white rounded-xl overflow-hidden">
+              <colgroup>
+                <col className="w-12" />          {/* checkbox */}
+                <col />                           {/* task title */}
+                <col className="w-32" />          {/* priority */}
+                <col className="w-40" />          {/* due date */}
+                <col className="w-20" />          {/* actions */}
+              </colgroup>
 
-  return (
-    <div key={group} className="mb-10">
-      {/* GROUP HEADING */}
-      {/* <h3 className="text-xs font-semibold text-slate-500 uppercase mb-3">
-        {group}
-      </h3> */}
+              <thead>
+                <tr className="text-xs text-slate-500 border-b bg-slate-50">
+                  <th className=" px-4 py-3"></th>
+                  {/* GROUP NAME AS COLUMN HEADER */}
+                  <th className=" text-left px-4 py-3 font-semibold">
+                    {group}
+                  </th>
+                  <th className="text-center px-4 py-3">Priority</th>
+                  <th className="text-center px-4 py-3">Due date</th>
+                  <th className="text-center px-4 py-3">Actions</th>
+                </tr>
+              </thead>
 
-      {/* TABLE PER GROUP */}
-      <table className="w-full border-collapse bg-white rounded-xl overflow-hidden">
-        <thead>
-          <tr className="text-xs text-slate-500 border-b bg-slate-50">
-            <th className="w-12 px-4 py-3"></th>
-             {/* GROUP NAME AS COLUMN HEADER */}
-    <th className=" text-left px-4 py-3 font-semibold">
-      {group}
-    </th>
-            <th className="text-left px-4 py-3">Task</th>
-            <th className="text-left px-4 py-3">Priority</th>
-            <th className="text-left px-4 py-3">Due date</th>
-            <th className="text-left px-4 py-3">Actions</th>
-          </tr>
-        </thead>
+              <tbody>
+                {items.map(task => (
+                  <tr
+                    key={task.id}
+                    className={`border-b last:border-none transition ${
+                      task.isCompleted
+                        ? "opacity-70"
+                        : "hover:bg-slate-50"
+                    }`}
+                  >
+                    {/* CHECK */}
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => handleToggle(task.id)}
+                        className={`w-6 h-6 rounded-full border flex items-center justify-center transition ${
+                          task.isCompleted
+                            ? "bg-brand-secondary border-brand-secondary"
+                            : "border-slate-300 hover:bg-brand-secondary group"
+                        }`}
+                      >
+                        {task.isCompleted ? (
+                          <CircleCheckBig size={16} className="text-white" />
+                        ) : (
+                          <Check
+                            size={14}
+                            className="text-slate-400 group-hover:text-white"
+                          />
+                        )}
+                      </button>
+                    </td>
 
-        <tbody>
-          {items.map(task => (
-            <tr
-              key={task.id}
-              className={`border-b last:border-none transition ${
-                task.isCompleted
-                  ? "opacity-70"
-                  : "hover:bg-slate-50"
-              }`}
-            >
-              {/* CHECK */}
-              <td className="px-4 py-3">
-                <button
-                  onClick={() => handleToggle(task.id)}
-                  className={`w-6 h-6 rounded-full border flex items-center justify-center transition ${
-                    task.isCompleted
-                      ? "bg-brand-secondary border-brand-secondary"
-                      : "border-slate-300 hover:bg-brand-secondary group"
-                  }`}
-                >
-                  {task.isCompleted ? (
-                    <CircleCheckBig size={16} className="text-white" />
-                  ) : (
-                    <Check
-                      size={14}
-                      className="text-slate-400 group-hover:text-white"
-                    />
-                  )}
-                </button>
-              </td>
+                    {/* TASK TITLE */}
+                    <td className="px-4 py-3 text-sm">
+                      <span
+                        className={
+                          task.isCompleted
+                            ? "line-through text-slate-400"
+                            : "text-brand-dark"
+                        }
+                      >
+                        {task.title}
+                      </span>
+                    </td>
 
-              {/* TASK TITLE */}
-              <td className="px-4 py-3 text-sm">
-                <span
-                  className={
-                    task.isCompleted
-                      ? "line-through text-slate-400"
-                      : "text-brand-dark"
-                  }
-                >
-                  {task.title}
-                </span>
-              </td>
+                    {/* PRIORITY */}
+                    <td className="px-4 py-3 text-center">
+                      <PriorityBadge level={task.priority} />
+                    </td>
 
-              {/* PRIORITY */}
-              <td className="px-4 py-3">
-                <PriorityBadge level={task.priority} />
-              </td>
+                    {/* DUE DATE */}
+                    <td className="px-4 py-3 text-sm text-slate-400 text-center">
+                      {task.dueDate || "—"}
+                    </td>
 
-              {/* DUE DATE */}
-              <td className="px-4 py-3 text-sm text-slate-400">
-                {task.dueDate || "—"}
-              </td>
-
-              {/* ACTIONS */}
-              <td className="px-4 py-3 text-right">
-                <button
-                  onClick={() => handleDelete(task.id)}
-                  className="text-slate-400 hover:text-red-500"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-})}
+                    {/* ACTIONS */}
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleDelete(task.id)}
+                        className="text-slate-400 hover:text-red-500"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      })}
 
       <TaskModal
         isOpen={showModal}
