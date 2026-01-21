@@ -30,6 +30,17 @@ export default function Login() {
   }, [token]);
 
   return (
+    <div>
+       <div className="w-full max-w-md rounded-2xl
+      bg-white/20 backdrop-blur-xl
+      border border-white/30
+      shadow-xl p-8">
+
+      <h2 className="text-2xl font-semibold text-white mb-6">
+        Welcome back
+      </h2>
+
+    </div>
     <form onSubmit={handleSubmit}>
       <h2>Login</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -37,5 +48,6 @@ export default function Login() {
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" />
       <button type="submit">Login</button>
     </form>
+    </div>
   );
 }
