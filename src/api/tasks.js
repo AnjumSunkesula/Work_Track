@@ -14,14 +14,14 @@ export async function getTasks(token) {
   return res.json();
 }
 
-export async function createTask(title, token, priority) {
+export async function createTask(title, token, priority, description, dueDate) {
   const res = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ title, priority }),
+    body: JSON.stringify({ title, priority, description, dueDate }),
   });
 
   if (!res.ok) {
