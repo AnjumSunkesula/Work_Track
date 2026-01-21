@@ -115,10 +115,12 @@ export default function Tasks() {
   const [priorityFilter, setPriorityFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [expandedTaskId, setExpandedTaskId] = useState(null);
   // for future use
   const [actionLoading, setActionLoading] = useState({});
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+
   
 
 
@@ -138,7 +140,7 @@ export default function Tasks() {
     if (!title.trim()) return;
     
     try {
-      const newTask = await createTask(title, token, priority);
+      const newTask = await createTask(title, token, priority, description, dueDate);
       setTasks([...tasks, newTask]);
 
       setTitle("");
@@ -277,15 +279,16 @@ export default function Tasks() {
           <div key={group} className="mb-10">
             <table className="w-full border-collapse bg-white rounded-xl overflow-hidden">
               <colgroup>
-                <col className="w-12" />          {/* checkbox */}
-                <col />                           {/* task title */}
-                <col className="w-32" />          {/* priority */}
-                <col className="w-40" />          {/* due date */}
-                <col className="w-20" />          {/* actions */}
+                <col className="w-12" />          
+                <col />                          
+                <col className="w-32" />          
+                <col className="w-40" />          
+                <col className="w-20" />          
               </colgroup>
 
               <thead>
                 <tr className="text-xs text-slate-500 border-b bg-slate-50">
+                  
                   <th className=" px-4 py-3"></th>
                   {/* GROUP NAME AS COLUMN HEADER */}
                   <th className=" text-left px-4 py-3 font-semibold">
@@ -299,68 +302,96 @@ export default function Tasks() {
 
               <tbody>
                 {items.map(task => (
-                  <tr
-                    key={task.id}
-                    className={`border-b last:border-none transition ${
-                      task.isCompleted
-                        ? "opacity-70"
-                        : "hover:bg-slate-50"
-                    }`}
-                  >
-                    {/* CHECK */}
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => handleToggle(task.id)}
-                        className={`w-6 h-6 rounded-full border flex items-center justify-center transition ${
-                          task.isCompleted
-                            ? "bg-brand-secondary border-brand-secondary"
-                            : "border-slate-300 hover:bg-brand-secondary group"
-                        }`}
-                      >
-                        {task.isCompleted ? (
-                          <CircleCheckBig size={16} className="text-white" />
-                        ) : (
-                          <Check
-                            size={14}
-                            className="text-slate-400 group-hover:text-white"
-                          />
-                        )}
-                      </button>
-                    </td>
+                  <React.Fragment key={task.id}>
+                    <tr
+                      key={task.id}
+                      className={`border-b last:border-none transition ${
+                        task.isCompleted
+                          ? "opacity-70"
+                          : "hover:bg-slate-50"
+                      }`}
+                    >
+                      {/* CHECK */}
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => handleToggle(task.id)}
+                          className={`w-6 h-6 rounded-full border flex items-center justify-center transition ${
+                            task.isCompleted
+                              ? "bg-brand-secondary border-brand-secondary"
+                              : "border-slate-300 hover:bg-brand-secondary group"
+                          }`}
+                        >
+                          {task.isCompleted ? (
+                            <CircleCheckBig size={16} className="text-white" />
+                          ) : (
+                            <Check
+                              size={14}
+                              className="text-slate-400 group-hover:text-white"
+                            />
+                          )}
+                        </button>
+                      </td>
 
-                    {/* TASK TITLE */}
-                    <td className="px-4 py-3 text-sm">
-                      <span
-                        className={
-                          task.isCompleted
-                            ? "line-through text-slate-400"
-                            : "text-brand-dark"
-                        }
-                      >
-                        {task.title}
-                      </span>
-                    </td>
+                      {/* TASK TITLE */}
+                      <td className="px-4 py-3 text-sm">
+                        <span
+                          onClick={() => {
+                            console.log("clicked", task.id,task.description)
+                            setExpandedTaskId(
+                              expandedTaskId === task.id ? null : task.id
+                            );
+                          }}
+                          className={`
+                            cursor-pointer
+                            hover:underline
+                            ${
+                              task.isCompleted
+                                ? "line-through text-slate-400"
+                                : "text-brand-dark"
+                            }
+                          `}
+                        >
+                          {task.title}
+                        </span>
+                      </td>
 
-                    {/* PRIORITY */}
-                    <td className="px-4 py-3 text-center">
-                      <PriorityBadge level={task.priority} />
-                    </td>
+                      {/* PRIORITY */}
+                      <td className="px-4 py-3 text-center">
+                        <PriorityBadge level={task.priority} />
+                      </td>
 
-                    {/* DUE DATE */}
-                    <td className="px-4 py-3 text-sm text-slate-400 text-center">
-                      {task.dueDate || "—"}
-                    </td>
+                      {/* DUE DATE */}
+                      <td className="px-4 py-3 text-sm text-slate-400 text-center">
+                        {task.dueDate || "—"}
+                      </td>
 
-                    {/* ACTIONS */}
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleDelete(task.id)}
-                        className="text-slate-400 hover:text-red-500"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
+                      {/* ACTIONS */}
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => handleDelete(task.id)}
+                          className="text-slate-400 hover:text-red-500"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                    {expandedTaskId === task.id && (
+                      <tr className="bg-slate-50 transition-all duration-200">
+                        <td></td>
+
+                        <td colSpan={4} className="px-4 pb-4 text-sm text-slate-600">
+                          <div className="border-l-2 border-brand-secondary pl-4">
+                            <p className="text-xs uppercase text-slate-400 mb-1">
+                              Description
+                            </p>
+                            <p className="leading-relaxed">
+                              {task.description || "No description provided."}
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
