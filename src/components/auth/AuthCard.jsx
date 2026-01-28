@@ -4,7 +4,7 @@ export default function AuthCard({ children }) {
       className="
         w-full max-w-xl
         rounded-2xl
-        bg-white/25
+        bg-brand-secondary/20
         backdrop-blur-xl
         border border-white/30
         shadow-2xl

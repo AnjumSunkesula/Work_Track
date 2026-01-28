@@ -35,7 +35,7 @@ export default function Login() {
   return (
     <AuthCard>
       <AuthTabs />
-      <h2 className="mb-4 text-xl font-semibold">Welcome back</h2>
+      <h2 className="mb-6 text-xl text-center text-brand-bg font-semibold">Welcome back</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -43,7 +43,7 @@ export default function Login() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-lg bg-white/20 px-4 py-3 text-white placeholder-white/60 focus:outline-none"
+          className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
         />
         {email && !isValidEmail(email) && (
           <p style={{ color: "red" }}>Enter a valid email</p>
@@ -58,7 +58,7 @@ export default function Login() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg bg-white/20 px-4 py-3 text-white placeholder-white/60 focus:outline-none"
+          className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
         />
         {password && password.length < 6 && (
           <p style={{ color: "red" }}>Password must be at least 6 characters</p>
@@ -71,7 +71,9 @@ export default function Login() {
         <button
           type="submit"
           disabled={!isFormValid}
-          className="w-full rounded-lg bg-white py-3 font-semibold text-black hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6FOD7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6FOD7]/80  transition-all duration-300 ease-out
+    hover:-translate-y-1 hover:shadow-lg
+    active:translate-y-0"
         >
           Login
         </button>
