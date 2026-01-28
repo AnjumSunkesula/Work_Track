@@ -87,6 +87,8 @@ const login = async (email, password) => {
   );
 }
 
+export const isValidEmail = (email) =>  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if(!ctx) {
