@@ -2,20 +2,37 @@ import { useState } from "react";
 import { useAuth, isValidEmail } from "../../context/AuthContext";
 import AuthCard from "./AuthCard";
 import AuthTabs from "./AuthTabs";
+import { registerUser } from "../../api/auth";
 
 export default function Register() {
   const { register } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await register(fullName, email, password);
+    setError("");
+
+    try{
+      await registerUser({
+        fullName,
+        email,
+        password,
+      });
+      navigate("/login");
+    } catch (err) {
+      if (err.message.toLowerCase().includes("email")) {
+    setError("An account with this email already exists. Please log in.");
+  } else {
+    setError("Registration failed. Please try again.");
+  }
+    }
   };
 
   const isFormValid =
-  fullName.trim().length >= 2 &&
+  fullName.trim().length >= 3 &&
   isValidEmail(email) &&
   password.length >= 6;
 
@@ -48,6 +65,11 @@ export default function Register() {
         />
         {email && !isValidEmail(email) && (
   <p style={{ color: "red" }}>Enter a valid email</p>
+)}
+{error && (
+  <div style={{ color: "red" }}>
+    {error}
+  </div>
 )}
 
 
