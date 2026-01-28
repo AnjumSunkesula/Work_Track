@@ -7,10 +7,26 @@ export default function Login() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(email, password);
+    setEmailError("");
+    setPasswordError("");
+
+    try{
+      await login(email, password);
+    } catch (err) {
+      if (err.code === "INVALID_EMAIL") {
+        setEmailError("This email is not registered");
+      } else if (err.code === "INVALID_PASSWORD") {
+        setPasswordError("Password is incorrect");
+      } else {
+        setPasswordError("Login failed. Try again.");
+      }
+    }
   };
 
   const isFormValid = isValidEmail(email) && password.length >= 6;
@@ -19,7 +35,6 @@ export default function Login() {
   return (
     <AuthCard>
       <AuthTabs />
-
       <h2 className="mb-4 text-xl font-semibold">Welcome back</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -31,8 +46,12 @@ export default function Login() {
           className="w-full rounded-lg bg-white/20 px-4 py-3 text-white placeholder-white/60 focus:outline-none"
         />
         {email && !isValidEmail(email) && (
-  <p style={{ color: "red" }}>Enter a valid email</p>
-)}
+          <p style={{ color: "red" }}>Enter a valid email</p>
+        )}
+
+        {emailError && (
+          <p style={{ color: "red" }}>{emailError}</p>
+        )}
 
         <input
           type="password"
@@ -42,10 +61,12 @@ export default function Login() {
           className="w-full rounded-lg bg-white/20 px-4 py-3 text-white placeholder-white/60 focus:outline-none"
         />
         {password && password.length < 6 && (
-  <p style={{ color: "red" }}>
-    Password must be at least 6 characters
-  </p>
-)}
+          <p style={{ color: "red" }}>Password must be at least 6 characters</p>
+        )}
+
+        {passwordError && (
+          <p style={{ color: "red" }}>{passwordError}</p>
+        )}
 
         <button
           type="submit"
