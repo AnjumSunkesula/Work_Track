@@ -88,6 +88,16 @@ export function AuthProvider({ children }) {
 
 export const isValidEmail = (email) =>  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+export function getPasswordStrength(password) {
+  return {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    number: /\d/.test(password),
+    special: /[@_!#$%^&*]/.test(password),
+  };
+}
+
+
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if(!ctx) {
