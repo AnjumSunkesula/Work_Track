@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth, isValidEmail } from "../../context/AuthContext";
+import { useAuth, isValidEmail, getPasswordStrength } from "../../context/AuthContext";
 import AuthCard from "./AuthCard";
 import AuthTabs from "./AuthTabs";
 import { User ,Eye, EyeClosed, Mail} from 'lucide-react';
@@ -11,7 +11,19 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [error, setError] = useState("");
+  
+  
+  const strength = getPasswordStrength(password);
+  
+  const isStrongPassword =
+  strength.length &&
+  strength.uppercase &&
+  strength.number &&
+  strength.special;
+  
+  const isFormValid = fullName.trim().length >= 3 && isValidEmail(email) && isStrongPassword;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +40,7 @@ export default function Register() {
     }
   };
 
-  const isFormValid = fullName.trim().length >= 3 && isValidEmail(email) && password.length >= 6;
+
 
   return (
     <AuthCard>
@@ -60,6 +72,8 @@ export default function Register() {
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"> {<Mail />} </div>
         </div>
+        
+
         {email && !isValidEmail(email) && (
           <p style={{ color: "red" }}>Enter a valid email</p>
         )}
@@ -74,7 +88,10 @@ export default function Register() {
            type={showPassword ? "text" : "password"}
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setPasswordTouched(true);
+            }}
             className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
           />
           <button
@@ -85,11 +102,21 @@ export default function Register() {
             {showPassword ? <EyeClosed /> : <Eye />}
           </button>
         </div>
-
-        {password && password.length < 6 && (
-          <p style={{ color: "red" }}>
-            Password must be at least 6 characters
-          </p>
+        {passwordTouched && (
+          <div className="mt-2 space-y-1 text-sm">
+            <p className={strength.length ? "text-brand-primary" : "text-red-500"}>
+              • At least 8 characters
+            </p>
+            <p className={strength.uppercase ? "text-brand-primary" : "text-red-500"}>
+              • One uppercase letter
+            </p>
+            <p className={strength.number ? "text-brand-primary" : "text-red-500"}>
+              • One number
+            </p>
+            <p className={strength.special ? "text-brand-primary" : "text-red-500"}>
+              • One special character (@ _ ! #)
+            </p>
+          </div>
         )}
 
         <button
