@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth, isValidEmail, getPasswordStrength } from "../../context/AuthContext";
 import AuthCard from "./AuthCard";
 import AuthTabs from "./AuthTabs";
-import { User ,Eye, EyeClosed, Mail} from 'lucide-react';
+import { User ,Eye, EyeClosed, Mail,CheckCircle, XCircle} from 'lucide-react';
 
 
 export default function Register() {
@@ -104,20 +104,52 @@ export default function Register() {
         </div>
         {passwordTouched && (
           <div className="mt-2 space-y-1 text-sm">
-            <p className={strength.length ? "text-brand-primary" : "text-red-500"}>
-              • At least 8 characters
-            </p>
-            <p className={strength.uppercase ? "text-brand-primary" : "text-red-500"}>
-              • One uppercase letter
-            </p>
-            <p className={strength.number ? "text-brand-primary" : "text-red-500"}>
-              • One number
-            </p>
-            <p className={strength.special ? "text-brand-primary" : "text-red-500"}>
-              • One special character (@ _ ! #)
-            </p>
+            <div className="flex items-center gap-2">
+              {strength.length ? (
+                <CheckCircle className="text-brand-primary" size={16} />
+              ) : (
+                <XCircle className="text-red-500" size={16} />
+              )}
+              <span className={strength.length ? "text-brand-primary" : "text-red-500"}>
+                At least 8 characters
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {strength.uppercase ? (
+                <CheckCircle className="text-brand-primary" size={16} />
+              ) : (
+                <XCircle className="text-red-500" size={16} />
+              )}
+              <span className={strength.uppercase ? "text-brand-primary" : "text-red-500"}>
+                One uppercase letter
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {strength.number ? (
+                <CheckCircle className="text-brand-primary" size={16} />
+              ) : (
+                <XCircle className="text-red-500" size={16} />
+              )}
+              <span className={strength.number ? "text-brand-primary" : "text-red-500"}>
+                One number
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {strength.special ? (
+                <CheckCircle className="text-brand-primary" size={16} />
+              ) : (
+                <XCircle className="text-red-500" size={16} />
+              )}
+              <span className={strength.special ? "text-brand-primary" : "text-red-500"}>
+                One special character (@ _ ! #)
+              </span>
+            </div>
           </div>
         )}
+
 
         <button
           type="submit"
