@@ -14,8 +14,8 @@ export default function AuthTabs() {
           flex-1 rounded-lg py-2 text-sm font-semibold transition-all
           ${
             isLogin
-              ? "bg-white text-black shadow"
-              : "text-white hover:bg-white/20"
+              ? "bg-white text-brand-dark shadow"
+              : "text-zinc-500 hover:bg-white/20"
           }
         `}
       >
@@ -28,8 +28,8 @@ export default function AuthTabs() {
           flex-1 rounded-lg py-2 text-sm font-semibold transition-all
           ${
             !isLogin
-              ? "bg-white text-black shadow"
-              : "text-white hover:bg-white/20"
+              ? "bg-white text-brand-dark shadow"
+              : "text-zinc-500 hover:bg-white/20"
           }
         `}
       >

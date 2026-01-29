@@ -8,8 +8,24 @@ export async function loginUser(data) {
   });
 
   if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error || "Login failed");
+    let errorBody;
+
+    try {
+      errorBody = await res.json();
+    } catch {
+      errorBody = {};
+    }
+
+    // Normalize error
+    if (errorBody.code === "INVALID_EMAIL") {
+      throw { code: "INVALID_EMAIL" };
+    }
+
+    if (errorBody.code === "INVALID_PASSWORD") {
+      throw { code: "INVALID_PASSWORD" };
+    }
+
+    throw { code: "UNKNOWN_ERROR" };
   }
 
   return res.json();

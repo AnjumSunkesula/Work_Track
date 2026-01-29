@@ -36,20 +36,19 @@ export function AuthProvider({ children }) {
 
 
   // Login handler
-const login = async (email, password) => {
-     const data = await loginUser({ email, password });
-
-    // 🔑 Save token
-    localStorage.setItem("token", data.token);
-    setToken(data.token);
-
-    // ✅ Use user directly from login response
-    setUser(data.user);
-
-    navigate("/");
+  const login = async (email, password) => {
+    try{
+      const data = await loginUser({ email, password });
+      localStorage.setItem("token", data.token);
+      setToken(data.token);  // Save token
+      setUser(data.user);
+      navigate("/");
+    } catch (err) {
+      throw err; // Rethrow error to be handled in the component
+    }
   };
 
-    //  Register
+  //  Register handler
   const register = async (fullName, email, password) => {
     await registerUser({
       fullName,
@@ -63,7 +62,7 @@ const login = async (email, password) => {
 
 
 
-   const logout = () => {
+  const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
     setToken(null);
@@ -86,6 +85,18 @@ const login = async (email, password) => {
     </AuthContext.Provider>
   );
 }
+
+export const isValidEmail = (email) =>  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+export function getPasswordStrength(password) {
+  return {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    number: /\d/.test(password),
+    special: /[@_!#$%^&*]/.test(password),
+  };
+}
+
 
 export function useAuth() {
   const ctx = useContext(AuthContext);

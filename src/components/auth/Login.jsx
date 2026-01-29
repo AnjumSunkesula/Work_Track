@@ -1,44 +1,91 @@
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth, isValidEmail } from "../../context/AuthContext";
 import AuthCard from "./AuthCard";
 import AuthTabs from "./AuthTabs";
+import { Eye, EyeClosed, Mail} from 'lucide-react';
 
 export default function Login() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [shake, setShake] = useState(false);
+
+ 
+  const isFormValid = isValidEmail(email) && password.trim().length > 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(email, password);
+    setEmailError("");
+    setPasswordError("");
+
+    try{
+      await login(email, password);
+    } catch (err) {
+      if (err.code === "INVALID_EMAIL") {
+        setEmailError("This email is not registered");
+      } else if (err.code === "INVALID_PASSWORD") {
+        setPasswordError("Password is incorrect");
+      } else {
+        setPasswordError("Login failed. Try again.");
+      }
+      setShake(true);
+      setTimeout(() => setShake(false), 350);
+    }
   };
 
-  return (
-    <AuthCard>
-      <AuthTabs />
 
-      <h2 className="mb-4 text-xl font-semibold">Welcome back</h2>
+
+  return (
+    <AuthCard className={shake ? "shake" : ""}>
+      <AuthTabs />
+      <h2 className="mb-6 text-xl text-center text-brand-bg font-semibold">Welcome back</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-lg bg-white/20 px-4 py-3 text-white placeholder-white/60 focus:outline-none"
-        />
+        <div className="relative">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+          />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"> {<Mail />} </div>
+        </div>
+        {email && !isValidEmail(email) && (
+          <p style={{ color: "red" }}>Enter a valid email</p>
+        )}
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg bg-white/20 px-4 py-3 text-white placeholder-white/60 focus:outline-none"
-        />
+        {emailError && (
+          <p style={{ color: "red" }}>{emailError}</p>
+        )}
+
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"
+          >
+            {showPassword ? <EyeClosed /> : <Eye />}
+          </button>
+        </div>
+        {passwordError && (
+          <p style={{ color: "red" }}>{passwordError}</p>
+        )}
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-white py-3 font-semibold text-black hover:bg-white/90"
+          disabled={!isFormValid}
+          className="w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6FOD7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6FOD7]/80  transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg active:translate-y-0"
         >
           Login
         </button>
