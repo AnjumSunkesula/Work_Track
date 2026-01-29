@@ -11,6 +11,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [shake, setShake] = useState(false);
+
  
   const isFormValid = isValidEmail(email) && password.trim().length > 0;
 
@@ -29,13 +31,15 @@ export default function Login() {
       } else {
         setPasswordError("Login failed. Try again.");
       }
+      setShake(true);
+      setTimeout(() => setShake(false), 350);
     }
   };
 
 
 
   return (
-    <AuthCard>
+    <AuthCard className={shake ? "shake" : ""}>
       <AuthTabs />
       <h2 className="mb-6 text-xl text-center text-brand-bg font-semibold">Welcome back</h2>
 

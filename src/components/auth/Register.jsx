@@ -13,6 +13,8 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [error, setError] = useState("");
+  const [shake, setShake] = useState(false);
+
   
   
   const strength = getPasswordStrength(password);
@@ -37,13 +39,13 @@ export default function Register() {
       } else {
         setError("Registration failed. Please try again.");
       }
+      setShake(true);
+      setTimeout(() => setShake(false), 350);
     }
   };
 
-
-
   return (
-    <AuthCard>
+    <AuthCard className={shake ? "shake" : ""}>
       <AuthTabs />
 
       <h2 className="mb-6 text-xl text-center text-brand-bg font-semibold">Create an account</h2>
