@@ -12,6 +12,7 @@ export default function Login() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
  
+  const isFormValid = isValidEmail(email) && password.trim().length > 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +32,6 @@ export default function Login() {
     }
   };
 
-  const isFormValid = isValidEmail(email) && password.length >= 6;
 
 
   return (
@@ -74,10 +74,6 @@ export default function Login() {
             {showPassword ? <EyeClosed /> : <Eye />}
           </button>
         </div>
-        {password && password.length < 6 && (
-          <p style={{ color: "red" }}>Password must be at least 6 characters</p>
-        )}
-
         {passwordError && (
           <p style={{ color: "red" }}>{passwordError}</p>
         )}
