@@ -22,11 +22,15 @@ function buildActivity(task) {
 
 }
 
-function getRelativeTime(utDateString) {
-  const date = new Date(utDateString + "Z"); // Ensure UTC
-  const now = new Date();
+function getRelativeTime(dateString) {
+  if (!dateString) return "";
 
+  const date = new Date(dateString); 
+  if (isNaN(date.getTime())) return "";
+
+  const now = new Date();
   const diffMs = now - date;
+
   const diffSec = Math.floor(diffMs / 1000);
   const diffMin = Math.floor(diffSec / 60);
   const diffHr = Math.floor(diffMin / 60);
@@ -51,6 +55,7 @@ function groupByDay(tasks) {
 
   tasks.forEach(task => {
     const date = new Date(task.time);
+    if (isNaN(date.getTime())) return;  
 
     if (date.toDateString() === today.toDateString()) {
       groups.Today.push(task);
