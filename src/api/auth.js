@@ -1,4 +1,4 @@
-const API_URL = "https://localhost:7200/api/Users"; // adjust if needed
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/Users`;
 
 export async function loginUser(data) {
   const res = await fetch(`${API_URL}/login`, {
