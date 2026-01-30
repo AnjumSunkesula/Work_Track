@@ -1,6 +1,8 @@
 import PriorityBadge from "../components/PriorityBadge";
 import { useState,useEffect } from "react";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL; 
+
 function buildActivity(task) {
     if (task.isCompleted && task.completedAt) {
     return {
@@ -75,10 +77,10 @@ export default function Dashboard() {
       const token = localStorage.getItem("token");
 
       const [statsRes, tasksRes] = await Promise.all([
-        fetch("https://localhost:7200/api/dashboard/stats", {
+        fetch(`${BASE_URL}/api/dashboard/stats`,{
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch("https://localhost:7200/api/dashboard/recent-tasks", {
+        fetch(`${BASE_URL}/api/dashboard/recent-tasks`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
