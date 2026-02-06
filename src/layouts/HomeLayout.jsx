@@ -1,7 +1,9 @@
 import { Outlet } from "react-router-dom";
+import { useState } from "react";
 import LiquidChrome from "../components/background/LiquidChrome";
 
 export default function HomeLayout() {
+  const [focused, setFocused] = useState(false);
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       
@@ -20,9 +22,30 @@ export default function HomeLayout() {
 
       {/* Split Layout */}
       <div className="relative z-10 min-h-screen grid grid-cols-1 lg:grid-cols-2">
+
+        {/* 🔹 MOBILE CONTEXT HEADER */}
+        <div
+          className={`
+            lg:hidden
+            flex flex-col items-center text-center
+            px-6 pt-10 pb-6
+            text-white
+            transition-all duration-300
+            ${focused ? "opacity-60 scale-95" : ""}
+          `}
+        >
+          <h1 className="mb-3 inline-block font-bold text-2xl">
+            Work Track
+          </h1>
+
+          <h2 className="text-xl font-bold leading-tight">
+            Work smarter.<br />
+            Stay organised.
+          </h2>
+        </div>
         
         {/* LEFT SIDE – Marketing */}
-        <div className="hidden lg:flex flex-col justify-center px-16 text-white">
+        <div className="hidden lg:flex flex-col justify-center px-16  text-white">
           <span className="mb-4 inline-block w-fit rounded-full bg-white/10 px-4 py-1 text-sm">
             Now available in beta
           </span>
@@ -48,8 +71,8 @@ export default function HomeLayout() {
         </div>
 
         {/* RIGHT SIDE – Auth */}
-        <div className="flex items-center justify-center px-6">
-          <Outlet />
+        <div className="flex items-center justify-center px-6 bg-transparent pb-9 sm:pb-20">
+          <Outlet context={{ setFocused}}/>
         </div>
 
       </div>
