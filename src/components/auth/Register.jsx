@@ -61,7 +61,7 @@ export default function Register() {
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"> {<User />} </div>
         </div>
         {fullName && fullName.trim().length < 3 && (
-          <p style={{ color: "red" }}>Name must be at least 3 characters</p>
+          <p className="text-sm text-red-500">Name must be at least 3 characters</p>
         )}
 
         <div className="relative">
@@ -77,10 +77,10 @@ export default function Register() {
         
 
         {email && !isValidEmail(email) && (
-          <p style={{ color: "red" }}>Enter a valid email</p>
+          <p className="text-sm text-red-500">Enter a valid email</p>
         )}
         {error && (
-          <div style={{ color: "red" }}>
+          <div className="text-sm text-red-500">
             {error}
           </div>
         )}

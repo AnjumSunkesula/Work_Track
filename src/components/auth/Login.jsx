@@ -55,11 +55,11 @@ export default function Login() {
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"> {<Mail />} </div>
         </div>
         {email && !isValidEmail(email) && (
-          <p style={{ color: "red" }}>Enter a valid email</p>
+          <p className="text-sm text-red-500">Enter a valid email</p>
         )}
 
         {emailError && (
-          <p style={{ color: "red" }}>{emailError}</p>
+          <p className="text-sm text-red-500">{emailError}</p>
         )}
 
         <div className="relative">
@@ -79,7 +79,7 @@ export default function Login() {
           </button>
         </div>
         {passwordError && (
-          <p style={{ color: "red" }}>{passwordError}</p>
+          <p className="text-sm text-red-500">{passwordError}</p>
         )}
 
         <button
