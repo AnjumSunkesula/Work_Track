@@ -14,6 +14,8 @@ export default function Register() {
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   
   
@@ -31,8 +33,9 @@ export default function Register() {
     e.preventDefault();
     if (loading) return; // Prevent multiple submissions
     setError("");
+    setLoading(true);
 
-    try{
+    try {
       await register(fullName,email,password,);
     } catch (err) {
       if (err.message.toLowerCase().includes("email")) {
@@ -42,6 +45,8 @@ export default function Register() {
       }
       setShake(true);
       setTimeout(() => setShake(false), 350);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -159,7 +164,14 @@ export default function Register() {
           disabled={!isFormValid}
           className="w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6FOD7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6FOD7]/80  transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg active:translate-y-0"
         >
-          Create Account
+          {loading ? (
+    <span className="flex items-center justify-center gap-2">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-dark border-t-transparent" />
+      <span className="text-sm">Please wait</span>
+    </span>
+  ) : (
+    "Create Account"
+  )}
         </button>
       </form>
     </AuthCard>

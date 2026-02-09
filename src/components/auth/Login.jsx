@@ -12,7 +12,7 @@ export default function Login() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [shake, setShake] = useState(false);
-
+  const [loading, setLoading] = useState(false);
  
   const isFormValid = isValidEmail(email) && password.trim().length > 0;
 
@@ -21,8 +21,9 @@ export default function Login() {
     if (loading) return; // Prevent multiple submissions
     setEmailError("");
     setPasswordError("");
+    setLoading(true);
 
-    try{
+    try {
       await login(email, password);
     } catch (err) {
       if (err.code === "INVALID_EMAIL") {
@@ -88,7 +89,14 @@ export default function Login() {
           disabled={!isFormValid}
           className="w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6FOD7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6FOD7]/80  transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg active:translate-y-0"
         >
-          Login
+          {loading ? (
+    <span className="flex items-center justify-center gap-2">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-dark border-t-transparent" />
+      <span className="text-sm">Please wait</span>
+    </span>
+  ) : (
+    "Login"
+  )}
         </button>
       </form>
     </AuthCard>
