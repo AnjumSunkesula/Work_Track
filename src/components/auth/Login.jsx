@@ -35,6 +35,8 @@ export default function Login() {
       }
       setShake(true);
       setTimeout(() => setShake(false), 350);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +54,7 @@ export default function Login() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder:text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"> {<Mail />} </div>
         </div>
@@ -70,7 +72,7 @@ export default function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder:text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
           />
           <button
             type="button"
