@@ -12,16 +12,18 @@ export default function Login() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [shake, setShake] = useState(false);
-
+  const [loading, setLoading] = useState(false);
  
   const isFormValid = isValidEmail(email) && password.trim().length > 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent multiple submissions
     setEmailError("");
     setPasswordError("");
+    setLoading(true);
 
-    try{
+    try {
       await login(email, password);
     } catch (err) {
       if (err.code === "INVALID_EMAIL") {
@@ -33,6 +35,8 @@ export default function Login() {
       }
       setShake(true);
       setTimeout(() => setShake(false), 350);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,16 +54,16 @@ export default function Login() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder:text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"> {<Mail />} </div>
         </div>
         {email && !isValidEmail(email) && (
-          <p style={{ color: "red" }}>Enter a valid email</p>
+          <p className="text-sm text-red-500">Enter a valid email</p>
         )}
 
         {emailError && (
-          <p style={{ color: "red" }}>{emailError}</p>
+          <p className="text-sm text-red-500">{emailError}</p>
         )}
 
         <div className="relative">
@@ -68,7 +72,7 @@ export default function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder:text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
           />
           <button
             type="button"
@@ -79,15 +83,23 @@ export default function Login() {
           </button>
         </div>
         {passwordError && (
-          <p style={{ color: "red" }}>{passwordError}</p>
+          <p className="text-sm text-red-500">{passwordError}</p>
         )}
 
         <button
           type="submit"
-          disabled={!isFormValid}
-          className="w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6FOD7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6FOD7]/80  transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg active:translate-y-0"
+          aria-busy={loading}
+          disabled={loading || !isFormValid}
+          className={`w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6F0D7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6F0D7]/80  transition-all duration-300 ease-out enabled:hover:-translate-y-1 enabled:hover:shadow-lg active:translate-y-0${loading ? " cursor-wait" : ""}`}
         >
-          Login
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-dark border-t-transparent" />
+              <span className="text-sm">Please wait</span>
+            </span>
+          ) : (
+            "Login"
+          )}
         </button>
       </form>
     </AuthCard>

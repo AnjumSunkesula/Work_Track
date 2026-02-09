@@ -14,6 +14,8 @@ export default function Register() {
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   
   
@@ -29,9 +31,11 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent multiple submissions
     setError("");
+    setLoading(true);
 
-    try{
+    try {
       await register(fullName,email,password,);
     } catch (err) {
       if (err.message.toLowerCase().includes("email")) {
@@ -41,6 +45,8 @@ export default function Register() {
       }
       setShake(true);
       setTimeout(() => setShake(false), 350);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,12 +62,12 @@ export default function Register() {
             placeholder="Full Name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 py-3 text-[#4F5D3A] placeholder:text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"> {<User />} </div>
         </div>
         {fullName && fullName.trim().length < 3 && (
-          <p style={{ color: "red" }}>Name must be at least 3 characters</p>
+          <p className="text-sm text-red-500">Name must be at least 3 characters</p>
         )}
 
         <div className="relative">
@@ -70,17 +76,17 @@ export default function Register() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder:text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"> {<Mail />} </div>
         </div>
         
 
         {email && !isValidEmail(email) && (
-          <p style={{ color: "red" }}>Enter a valid email</p>
+          <p className="text-sm text-red-500">Enter a valid email</p>
         )}
         {error && (
-          <div style={{ color: "red" }}>
+          <div className="text-sm text-red-500">
             {error}
           </div>
         )}
@@ -94,10 +100,11 @@ export default function Register() {
               setPassword(e.target.value);
               setPasswordTouched(true);
             }}
-            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder-text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
+            className="w-full border-[#9CAB84]/60 rounded-lg bg-white px-4 pr-12 py-3 text-[#4F5D3A] placeholder:text-[#7B8660] focus:outline-none focus:ring-2 focus:ring-[#C5D89D] focus:border-[#9CAB84]"
           />
           <button
             type="button"
+            aria-label={showPassword ? "Hide Password" : "Show Password"}
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"
           >
@@ -155,10 +162,18 @@ export default function Register() {
 
         <button
           type="submit"
-          disabled={!isFormValid}
-          className="w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6FOD7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6FOD7]/80  transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg active:translate-y-0"
+          aria-busy={loading}
+          disabled={loading || !isFormValid}
+          className={`w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6F0D7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6F0D7]/80  transition-all duration-300 ease-out enabled:hover:-translate-y-1 enabled:hover:shadow-lg active:translate-y-0${loading ? " cursor-wait" : ""}`} 
         >
-          Create Account
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-dark border-t-transparent" />
+              <span className="text-sm">Please wait</span>
+            </span>
+          ) : (
+            "Create Account"
+          )}
         </button>
       </form>
     </AuthCard>
