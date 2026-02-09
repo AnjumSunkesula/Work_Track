@@ -104,6 +104,7 @@ export default function Register() {
           />
           <button
             type="button"
+            aria-label={showPassword ? "Hide Password" : "Show Password"}
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-dark"
           >
@@ -161,17 +162,18 @@ export default function Register() {
 
         <button
           type="submit"
-          disabled={!isFormValid}
-          className="w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6FOD7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6FOD7]/80  transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg active:translate-y-0"
+          aria-busy={loading}
+          disabled={loading || !isFormValid}
+          className={`w-full rounded-lg bg-brand-bg py-3 font-semibold text-brand-dark hover:bg-[#F6F0D7]/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#F6F0D7]/80  transition-all duration-300 ease-out enabled:hover:-translate-y-1 enabled:hover:shadow-lg active:translate-y-0${loading ? " cursor-wait" : ""}`} 
         >
           {loading ? (
-    <span className="flex items-center justify-center gap-2">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-dark border-t-transparent" />
-      <span className="text-sm">Please wait</span>
-    </span>
-  ) : (
-    "Create Account"
-  )}
+            <span className="flex items-center justify-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-dark border-t-transparent" />
+              <span className="text-sm">Please wait</span>
+            </span>
+          ) : (
+            "Create Account"
+          )}
         </button>
       </form>
     </AuthCard>
