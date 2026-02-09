@@ -29,6 +29,7 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent multiple submissions
     setError("");
 
     try{

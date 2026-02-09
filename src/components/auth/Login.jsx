@@ -18,6 +18,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // Prevent multiple submissions
     setEmailError("");
     setPasswordError("");
 
