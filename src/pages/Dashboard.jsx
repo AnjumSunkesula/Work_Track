@@ -115,16 +115,24 @@ export default function Dashboard() {
     return () => window.removeEventListener("dashboard-refresh", refresh);
   }, []);
 
+  // STATUS
   function Stat({ label, value }) {
     return (
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-black/5">
-        <p className="text-sm text-gray-500">{label}</p>
-        <h3 className="text-3xl font-semibold mt-2 text-brand-dark">
+      <div className=" bg-white rounded-2xl p-4 md:p-6 shadow-md border border-black/5 flex flex-col justify-between min-h-[110px] md:min-h-[130px]">
+        {/* Label */}
+        <p className="text-sm md:text-sm text-gray-500 leading-tight break-words min-h-[32px]">
+          {label}
+        </p>
+
+        {/* Value */}
+        <h3 className="text-2xl md:text-3xl md:font-semibold text-brand-dark mt-3">
           {value}
         </h3>
       </div>
     );
   }
+
+
 
   if (loading) {
     return (
@@ -138,7 +146,7 @@ export default function Dashboard() {
   return (
     <div className="flex min-h-screen bg-brand-bg">
       <main className="flex-1">
-        <h1 className="text-3xl font-semibold text-brand-dark mb-10">Dashboard</h1>
+        <h1 className="text-xl text-center md:text-left md:text-3xl font-semibold text-brand-dark mb-6 md:mb-10">Dashboard</h1>
 
         {/* Loading */}
         {loading && (
@@ -152,7 +160,7 @@ export default function Dashboard() {
 
         {/* Stats */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-3 gap-2 md:gap-6 mb-8 md:mb-10">
             <Stat label="Total Tasks" value={stats.totalTasks} />
             <Stat label="Completed" value={stats.completedTasks} />
             <Stat label="Pending" value={stats.pendingTasks} />
