@@ -43,7 +43,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           }
         >
           <div className="flex items-center gap-2">
-            <span><LayoutDashboard /></span>
+            <span><LayoutDashboard size={16}/></span>
             <span>Dashboard</span>
           </div>
         </NavLink>
@@ -55,7 +55,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           }
         >
           <div className="flex items-center gap-2">
-            <span><ListTodo /></span>
+            <span><ListTodo size={16}/></span>
             <span>Tasks</span>
           </div>
         </NavLink>
@@ -65,7 +65,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           className={`${linkBase} ${inactiveClass}`}
         >
           <div className="flex items-center gap-2">
-            <span><CalendarDays /></span>
+            <span><CalendarDays size={16}/></span>
             <span>Calendar</span>
           </div>
         </NavLink>
