@@ -1,140 +1,293 @@
-WORK TRACK
+🚀 Work Track
 
-A full-stack task management application that allows users to create, update, organize, and track tasks with priority and status management.
-Built with a modern React frontend and a secure backend API.
+A full-stack task management application that allows users to create, update, organize, and track tasks with priority and dynamic status management.
 
-FEATURES
+Built with a modern React frontend and a secure ASP.NET Core Web API backend.
 
-AUTHENTICATION:
+✨ Features
+🔐 Authentication
 
-1.User registration & login
+📝 User Registration & Login
 
-2.JWT-based authentication
+🔑 JWT-based authentication
 
-3.Persistent login via localStorage
+💾 Persistent login via localStorage
 
-4.Protected routes
+🛡 Protected routes with route guards
 
-DASHBOARD:
+📊 Dashboard
 
-1.Total Tasks
+📌 Total Tasks counter
 
-2.Completed Tasks
+✅ Completed Tasks counter
 
-3.Pending Tasks
+⏳ Pending Tasks counter
 
-4.Recent activity feed
+📜 Recent activity feed
 
-5.Responsive status cards
+📱 Fully responsive status cards
 
-TASK MANAGEMENT:
+🗂 Task Management
+Create Tasks With:
 
-1.Create tasks with:  Title
+🏷 Title
 
-                    Description
-                    
-                    Priority (Low / Medium / High)
-                    
-                    Due Date
-                    
-                    Description (Optional)
-                    
-2.Edit & delete tasks
+📝 Description (Optional)
 
-3.Toggle completion
+⚡ Priority (Low / Medium / High)
 
-4.Status auto-calculation:   Not Started
+📅 Due Date
 
-                           In Progress
-                           
-                           Due Today
-                           
-                           Overdue
-                           
-                           Completed
-                           
-5.Priority-based sorting
+Actions
 
-6.Grouping by:  Today
+✏ Edit tasks
 
-              Yesterday
-              
-              A Week Ago
-              
-              Older
+🗑 Delete tasks
 
-FILTERING & SEARCH:
+🔄 Toggle completion
 
-1.Search by title
+📊 Auto-calculated status
 
-2.Filter by: All
+Dynamic Status Calculation
 
-           Active
-           
-           Completed
-           
-3.Filter by priority
+💤 Not Started
 
-RESPONSIVE DESIGN:
+🚀 In Progress
 
-1.Desktop: table-based layout
+📅 Due Today
 
-2.Mobile: card-based layout
+🔴 Overdue
 
-3.Expandable descriptions
+✅ Completed
 
-4.Interactive UI elements
+Organization
 
-5.Smooth transitions
+🔝 Priority-based sorting
 
-TECH STACK
+📆 Grouped by:
 
-FRONTEND:
+Today
 
-1.React
+Yesterday
 
-2.Tailwind CSS
+A Week Ago
 
-3.Lucide React Icons
+Older
 
-4.Context API
+🔎 Filtering & Search
 
-BACKEND:
+🔍 Search by title
 
-1.Entity Framework Core
+📂 Filter by:
 
-2.ASP.NET CORE Web API
+All
 
-3.MySQL
+Active
 
-4.JWT Authentication
+Completed
 
-DEPLOYMENT
+🎯 Filter by priority
 
-FRONTEND:
+📱 Responsive Design
 
-1.Deployed on Vercel
+💻 Desktop → Table-based layout
 
-2.Automatic CI/CD from GitHub
+📱 Mobile → Card-based layout
 
-3.Environment variables configured in Vercel
+🔽 Expandable descriptions
 
-4.Production build using Vite
+🎨 Interactive UI elements
 
-BACKEND:
+✨ Smooth transitions
 
-1.Deployed on Render
+🛠 Tech Stack
+🎨 Frontend
 
-2.ASP.NET Core Web API hosted on Render
+⚛ React (Vite)
 
-3.Connected to managed PostgreSQL database
+🎨 Tailwind CSS
 
-4.Environment variables securely configured
+🎯 Lucide React Icons
 
-DATABASE:
+🌐 Context API (State Management)
 
-1.Entity Framework Core migrations used for schema management
+🧠 Backend
 
-AUTHOR
+🟣 ASP.NET Core Web API
+
+🗄 Entity Framework Core
+
+🔐 JWT Authentication
+
+🛢 MySQL (Development)
+
+🐘 PostgreSQL (Production)
+
+🌍 Deployment
+🚀 Frontend (Vercel)
+
+Hosted on Vercel
+
+Automatic CI/CD from GitHub
+
+Environment variables configured in Vercel
+
+Production build using Vite
+
+⚙ Backend (Render)
+
+Hosted on Render
+
+ASP.NET Core Web API deployment
+
+Connected to managed PostgreSQL database
+
+Secure environment variable configuration
+
+🗄 Database
+
+Entity Framework Core Migrations
+
+Managed PostgreSQL (Production)
+
+Migration-based schema control
+
+⚡ Challenges & Solutions
+1️⃣ 🔐 Authentication State Lost on Refresh
+🚧 Challenge
+
+Refreshing the page after login caused loss of authentication state.
+
+✅ Solution
+
+Stored JWT token in localStorage
+
+Implemented auth restoration inside AuthProvider
+
+Created /api/users/me endpoint
+
+Standardized login response:
+
+{
+  "user": { ... },
+  "token": "..."
+}
+
+
+Result: Persistent authentication across refreshes.
+
+2️⃣ 🔄 Frontend–Backend Route Mismatch
+🚧 Challenge
+
+Frontend called /api/auth/* while backend exposed /api/users/*.
+
+✅ Solution
+
+Standardized route naming
+
+Updated frontend API paths
+
+Centralized base URL with:
+
+VITE_API_BASE_URL
+
+
+Improved deployment flexibility.
+
+3️⃣ 📊 Dashboard Stats Not Updating
+🚧 Challenge
+
+Task updates didn’t refresh dashboard counters.
+
+✅ Solution
+localStorage.setItem("refreshDashboardStats", Date.now().toString());
+
+
+Dashboard listens and re-fetches stats automatically.
+
+Result: Real-time UI updates without global state libraries.
+
+4️⃣ 📱 Mobile Responsiveness (Table → Card Conversion)
+🚧 Challenge
+
+Desktop table layout broke on mobile screens.
+
+✅ Solution
+
+Created separate mobile card layout
+
+Used Tailwind breakpoints (md:hidden, hidden md:table)
+
+Preserved all desktop functionality
+
+Added visual indicators for expandable descriptions
+
+Result: Fully responsive UI without horizontal scrolling.
+
+5️⃣ 📊 Dynamic Status Calculation
+🚧 Challenge
+
+Status needed to update automatically based on:
+
+Due date
+
+Completion state
+
+Current date
+
+✅ Solution
+
+Created centralized helper:
+
+getTaskStatus(task)
+
+
+Eliminated need to store redundant status in database.
+
+6️⃣ 🛢 Database Migration Error (Production)
+🚧 Challenge
+Unknown column 'CompletedAt'
+
+✅ Solution
+
+Created EF Core migration
+
+Applied migration to production database
+
+Synced schema before redeployment
+
+7️⃣ 🌍 Deployment Configuration Issues
+🚧 Challenge
+
+Environment variables and DB connections differed between local and production.
+
+✅ Solution
+
+Configured .env in Vercel
+
+Set secure environment variables in Render
+
+Enabled CORS for frontend domain
+
+Connected to managed PostgreSQL
+
+8️⃣ ⏳ UX Feedback for Slow API Calls
+🚧 Challenge
+
+No user feedback during login or task actions.
+
+✅ Solution
+
+Added button-level loading spinners
+
+Disabled buttons during async actions
+
+Displayed error messages
+
+Prevented duplicate submissions
+
+Result: Improved user experience and perceived performance.
+
+👨‍💻 Author
 
 Anjum S
