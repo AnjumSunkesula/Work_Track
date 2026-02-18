@@ -1,10 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-
 import HomeLayout from "./layouts/HomeLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
-
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Dashboard from "./pages/Dashboard";
@@ -15,7 +13,6 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-
           {/* HOME (Login / Register) */}
           <Route element={<HomeLayout />}>
             <Route path="/login" element={<Login />} />
@@ -33,12 +30,11 @@ function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="tasks" element={<Tasks />} />
+            <Route path="calendar" element={<div className="flex items-center justify-center text-brand-dark min-h-screen">The calendar page is under construction. Please check back later.</div>} />
           </Route>
-
         </Routes>
       </AuthProvider>
     </BrowserRouter>
   );
 }
-
 export default App;

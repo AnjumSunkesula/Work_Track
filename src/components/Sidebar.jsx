@@ -1,21 +1,30 @@
 import { NavLink } from "react-router-dom";
-import LogoutButton from "./LogoutButton";
-import {X} from "lucide-react";
-import { LayoutDashboard } from "lucide-react";
-import { CalendarDays } from "lucide-react";
-import { ListTodo } from "lucide-react";
-import { UsersRound } from "lucide-react";
+import LogoutModal from "./LogoutModal";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {X, LayoutDashboard, CalendarDays, ListTodo, UsersRound} from "lucide-react";
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
+
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogoutConfirm = () => {
+    logout();
+    setShowLogoutModal(false);
+    navigate("/login");
+  }
 
   const linkBase = "block px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200";
   const activeClass = "bg-brand-accent text-brand-primary";
   const inactiveClass = "text-white hover:text-brand-dark hover:bg-slate-100";
 
-   return (
+  return (
     <aside
       className={`
-        fixed top-0 left-0 h-screen w-64 bg-brand-dark text-white z-40
+        fixed inset-y-0 left-0 h-screen w-64 bg-brand-dark text-white z-40
         transform transition-transform duration-500 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"} flex flex-col
       `}
@@ -34,7 +43,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 py-6 space-y-2">
+      <nav className="flex-1 px-2 py-6 space-y-2 overflow-y-auto">
         <NavLink
           to="/"
           end
@@ -43,7 +52,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           }
         >
           <div className="flex items-center gap-2">
-            <span><LayoutDashboard /></span>
+            <span><LayoutDashboard size={16}/></span>
             <span>Dashboard</span>
           </div>
         </NavLink>
@@ -55,7 +64,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           }
         >
           <div className="flex items-center gap-2">
-            <span><ListTodo /></span>
+            <span><ListTodo size={16}/></span>
             <span>Tasks</span>
           </div>
         </NavLink>
@@ -65,16 +74,25 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
           className={`${linkBase} ${inactiveClass}`}
         >
           <div className="flex items-center gap-2">
-            <span><CalendarDays /></span>
+            <span><CalendarDays size={16}/></span>
             <span>Calendar</span>
           </div>
         </NavLink>
       </nav>
 
       {/* Logout */}
-      <div className="px-4 py-4 border-t border-white/10">
-        <LogoutButton />
+      <div 
+        onClick={() => setShowLogoutModal(true)}
+        className="flex items-center gap-2 px-4 py-4 border-t border-white/10 cursor-pointer">
+        <UsersRound size={16}/>
+        <span>Logout</span>
       </div>
+
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogoutConfirm}
+      />
     </aside>
   );
 }
