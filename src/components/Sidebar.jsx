@@ -1,18 +1,27 @@
 import { NavLink } from "react-router-dom";
-import LogoutButton from "./LogoutButton";
-import {X} from "lucide-react";
-import { LayoutDashboard } from "lucide-react";
-import { CalendarDays } from "lucide-react";
-import { ListTodo } from "lucide-react";
-import { UsersRound } from "lucide-react";
+import LogoutModal from "./LogoutModal";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {X, LayoutDashboard, CalendarDays, ListTodo, UsersRound} from "lucide-react";
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
+
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogoutConfirm = () => {
+    logout();
+    setShowLogoutModal(false);
+    navigate("/login");
+  }
 
   const linkBase = "block px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200";
   const activeClass = "bg-brand-accent text-brand-primary";
   const inactiveClass = "text-white hover:text-brand-dark hover:bg-slate-100";
 
-   return (
+  return (
     <aside
       className={`
         fixed inset-y-0 left-0 h-screen w-64 bg-brand-dark text-white z-40
