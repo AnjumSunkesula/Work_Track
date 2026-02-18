@@ -15,7 +15,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
    return (
     <aside
       className={`
-        fixed top-0 left-0 h-screen w-64 bg-brand-dark text-white z-40
+        fixed inset-y-0 left-0 h-screen w-64 bg-brand-dark text-white z-40
         transform transition-transform duration-500 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"} flex flex-col
       `}
@@ -34,7 +34,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 py-6 space-y-2">
+      <nav className="flex-1 px-2 py-6 space-y-2 overflow-y-auto">
         <NavLink
           to="/"
           end
