@@ -8,16 +8,23 @@ FEATURES
 AUTHENTICATION:
 
 1.User registration & login
+
 2.JWT-based authentication
+
 3.Persistent login via localStorage
+
 4.Protected routes
 
 DASHBOARD:
 
 1.Total Tasks
+
 2.Completed Tasks
+
 3.Pending Tasks
+
 4.Recent activity feed
+
 5.Responsive status cards
 
 TASK MANAGEMENT:
@@ -27,14 +34,19 @@ TASK MANAGEMENT:
                     Priority (Low / Medium / High)
                     Due Date
                     Description (Optional)
+                    
 2.Edit & delete tasks
+
 3.Toggle completion
+
 4.Status auto-calculation:   Not Started
                            In Progress
                            Due Today
                            Overdue
                            Completed
+                           
 5.Priority-based sorting
+
 6.Grouping by:  Today
               Yesterday
               A Week Ago
@@ -51,9 +63,13 @@ FILTERING & SEARCH:
 RESPONSIVE DESIGN:
 
 1.Desktop: table-based layout
+
 2.Mobile: card-based layout
+
 3.Expandable descriptions
+
 4.Interactive UI elements
+
 5.Smooth transitions
 
 TECH STACK
@@ -61,16 +77,45 @@ TECH STACK
 FRONTEND:
 
 1.React
+
 2.Tailwind CSS
+
 3.Lucide React Icons
+
 4.Context API
 
 BACKEND:
 
 1.Entity Framework Core
+
 2.ASP.NET CORE Web API
+
 3.MySQL
+
 4.JWT Authentication
 
+DEPLOYMENT
 
-1.
+FRONTEND:
+
+1.Deployed on Vercel
+
+2.Automatic CI/CD from GitHub
+
+3.Environment variables configured in Vercel
+
+4.Production build using Vite
+
+BACKEND:
+
+1.Deployed on Render
+
+2.ASP.NET Core Web API hosted on Render
+
+3.Connected to managed PostgreSQL database
+
+4.Environment variables securely configured
+
+DATABASE:
+
+1.Entity Framework Core migrations used for schema management
