@@ -461,6 +461,7 @@ export default function Tasks() {
                       </td>
                     </tr>
 
+                    {/* description expansion */}
                     {expandedTaskId === task.id && (
                       <tr className="bg-slate-50 transition-all duration-200">
                         <td></td>
@@ -514,7 +515,10 @@ export default function Tasks() {
                           />
                         )}
                       </button>
-                      <h3 className="text-sm font-medium text-brand-dark leading-snug">
+                      <h3
+                        onClick={() => setExpandedTaskId(expandedTaskId === task.id ? null : task.id)}
+                        className="text-sm font-medium text-brand-dark leading-snug cursor-pointer"
+                      >
                         {task.title}
                       </h3>
                     </div>
@@ -569,6 +573,17 @@ export default function Tasks() {
                       <Trash2 size={16} />
                     </button>
                   </div>
+                  {/* description expansion on mobile layout */}
+                  {expandedTaskId === task.id && (
+                    <div className="mt-3 pt-3 border-t border-slate-100">
+                      <p className="text-xs text-slate-400 mb-1">
+                        Description
+                      </p>
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        {task.description || "No description provided."}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
