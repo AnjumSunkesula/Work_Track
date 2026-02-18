@@ -72,9 +72,18 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       </nav>
 
       {/* Logout */}
-      <div className="px-4 py-4 border-t border-white/10">
-        <LogoutButton />
+      <div 
+        onClick={() => setShowLogoutModal(true)}
+        className="flex items-center gap-2 px-4 py-4 border-t border-white/10 cursor-pointer">
+        <UsersRound size={16}/>
+        <span>Logout</span>
       </div>
+
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogoutConfirm}
+      />
     </aside>
   );
 }
