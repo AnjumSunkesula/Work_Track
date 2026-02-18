@@ -27,7 +27,7 @@ export default function TaskModal({isOpen, task, onClose, title, setTitle, prior
     >
       <div
         // onSubmit={onSave}
-        className="bg-white w-full max-w-lg rounded-2xl p-6 shadow-xl"
+        className="bg-white w-full max-w-lg rounded-2xl p-6 shadow-xl m-4 md:m-0"
         onClick={(e) => e.stopPropagation()} // ⬅ prevent close when clicking inside
       >
         {/* Header */}

@@ -25,7 +25,7 @@ export default function DashboardLayout() {
         />
       )}
 
-      <main className={`flex-1 transition-all duration-300 p-10
+      <main className={`flex-1 transition-all duration-300 p-4 md:p-10
           ${sidebarOpen ? "ml-64" : "ml-16"}
         `}>
         <Outlet />

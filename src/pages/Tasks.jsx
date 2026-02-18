@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getTasks, createTask, deleteTask, toggleTask, updateTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
-import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus, PenLine, PencilLine  } from "lucide-react";
+import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus, PenLine, ChevronDown  } from "lucide-react";
 import PriorityBadge from "../components/PriorityBadge";
 import TaskModal from "../components/TaskModal";
 
@@ -261,8 +261,8 @@ export default function Tasks() {
 
   return (
     <div>
-      <h1 className="text-3xl font-semibold text-brand-dark mb-10">My Tasks</h1>
-      <div className="flex items-center justify-between mb-6">
+      <h1 className="text-xl text-center md:text-left md:text-3xl font-semibold text-brand-dark mb-6 md:mb-10">My Tasks</h1>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
         <input
           type="text"
           placeholder="Search tasks..."
@@ -282,10 +282,10 @@ export default function Tasks() {
               setEditingTask(null);
               setShowModal(true);
             }}
-            className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold text-md hover:text-white hover:bg-brand-dark hover:opacity-90"
+            className="px-4 py-2 rounded-lg bg-brand-accent text-brand-dark font-semibold text-sm md:text-md hover:text-white hover:bg-brand-dark hover:opacity-90"
           >
             <div className="flex gap-2 items-center">
-              <Plus />
+              <Plus/>
               New Task
             </div> 
           </button>
@@ -294,12 +294,12 @@ export default function Tasks() {
 
 
       {/* Filters */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-1 md:gap-2 mb-6">
         {["all", "active", "completed"].map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-1 rounded-full text-md font-medium transition
+            className={`px-2 md:px-4 py-1 rounded-full text-md font-medium transition
               ${filter === f
                 ? "bg-brand-dark text-white"
                 : "bg-transparent text-slate-500 hover:bg-brand-secondary hover:text-white"
@@ -332,7 +332,7 @@ export default function Tasks() {
 
         return (
           <div key={group} className="mb-10">
-            <table className="w-full border-collapse bg-white rounded-xl overflow-hidden">
+            <table className="hidden md:table w-full border-collapse bg-white rounded-xl overflow-hidden">
               <colgroup>
                 <col className="w-12" />          
                 <col />  
@@ -391,25 +391,27 @@ export default function Tasks() {
 
                       {/* TASK TITLE */}
                       <td className="px-4 py-3 text-sm">
-                        <span
-                          onClick={() => {
-                            console.log("clicked", task.id,task.description)
-                            setExpandedTaskId(
-                              expandedTaskId === task.id ? null : task.id
-                            );
-                          }}
-                          className={`
-                            cursor-pointer
-                            hover:underline
-                            ${
-                              task.isCompleted
-                                ? "line-through text-slate-400"
-                                : "text-brand-dark"
-                            }
-                          `}
+                        <div
+                          className={`flex items-center gap-2
+                          ${task.isCompleted ? "line-through text-slate-400" : "text-brand-dark"}`}
                         >
-                          {task.title}
-                        </span>
+                          <span className="text-sm md:text-base">
+                            {task.title}
+                          </span>
+
+                          {task.description && (
+                            <ChevronDown
+                              onClick={() =>
+                                setExpandedTaskId(
+                                  expandedTaskId === task.id ? null : task.id
+                                )
+                              }
+                              size={16} 
+                              className={`transition-transform duration-200
+                                ${expandedTaskId === task.id ? "rotate-180" : ""}`}
+                            />
+                          )}
+                        </div>
                       </td>
 
                       {/* STATUS */}
@@ -461,6 +463,7 @@ export default function Tasks() {
                       </td>
                     </tr>
 
+                    {/* description expansion */}
                     {expandedTaskId === task.id && (
                       <tr className="bg-slate-50 transition-all duration-200">
                         <td></td>
@@ -481,6 +484,128 @@ export default function Tasks() {
                 ))}
               </tbody>
             </table>
+            {/* MOBILE TASK CARDS */}
+            <div className="md:hidden space-y-4">
+              {items.map(task => (
+                <div
+                  key={task.id}
+                  className="
+                    bg-white
+                    rounded-2xl
+                    p-4
+                    shadow-sm
+                    border border-black/5
+                  "
+                >
+                  {/* Top Row */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => handleToggle(task.id)}
+                        className={`w-6 h-6 rounded-full border flex items-center justify-center transition ${
+                          task.isCompleted
+                            ? "bg-brand-secondary border-brand-secondary"
+                            : "border-slate-300 hover:bg-brand-secondary group"
+                        }`}
+                      >
+                        {task.isCompleted ? (
+                          <CircleCheckBig size={14} className="text-white" />
+                        ) : (
+                          <Check
+                            size={12}
+                            className="text-slate-400 group-hover:text-white"
+                          />
+                        )}
+                      </button>
+                      <h3
+    className={`
+      text-sm font-medium leading-snug
+      ${task.isCompleted ? "line-through text-slate-400" : "text-brand-dark"}
+      ${task.description ? "cursor-pointer" : ""}
+      `}
+      >
+    {task.title}
+  </h3>
+
+  {task.description && (
+    <ChevronDown
+      onClick={() =>
+        task.description &&
+        setExpandedTaskId(expandedTaskId === task.id ? null : task.id)
+      }
+      size={14}
+      className={`transition-transform text-brand-dark duration-200 ${
+        expandedTaskId === task.id ? "rotate-180" : ""
+      }`}
+    />
+  )}
+                    </div>
+
+                    <PriorityBadge level={task.priority} />
+                  </div>
+
+                  {/* Divider */}
+                  <div className="my-3 h-px bg-slate-100" />
+
+                  {/* Info Section */}
+                  <div className="text-xs text-slate-500 space-y-1">
+                    {(() => {
+                      const status = getTaskStatus(task);
+                      return (
+                        <div className="flex justify-between items-center">
+                          <span>Status</span>
+                          <span
+                            className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${status.color}`}
+                          >
+                            {status.label}
+                          </span>
+                        </div>
+                      );
+                    })()}
+
+                    <div className="flex justify-between">
+                      <span>Due</span>
+                      <span className="text-brand-dark pr-3">
+                        {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-6 mt-4 text-sm text-brand-dark">
+                    <button
+                      onClick={() => {
+                        setEditingTask(task);
+                        setShowModal(true);
+                      }}
+                      className="text-slate-400 hover:text-brand-primary"
+                      title="Edit task"
+                    >
+                      <PenLine size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(task.id)}
+                      className="text-slate-400 hover:text-red-500"
+                      title="Delete task"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                  {/* description expansion on mobile layout */}
+                  {expandedTaskId === task.id && (
+                    <div className="mt-3 pt-3 border-t border-slate-100">
+                      <p className="text-xs text-slate-400 mb-1">
+                        Description
+                      </p>
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        {task.description || "No description provided."}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {/* mobile layout ended */}
           </div>
         );
       })}
