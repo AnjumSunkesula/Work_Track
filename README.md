@@ -30,9 +30,13 @@ DASHBOARD:
 TASK MANAGEMENT:
 
 1.Create tasks with:  Title
+
                     Description
+                    
                     Priority (Low / Medium / High)
+                    
                     Due Date
+                    
                     Description (Optional)
                     
 2.Edit & delete tasks
@@ -40,24 +44,35 @@ TASK MANAGEMENT:
 3.Toggle completion
 
 4.Status auto-calculation:   Not Started
+
                            In Progress
+                           
                            Due Today
+                           
                            Overdue
+                           
                            Completed
                            
 5.Priority-based sorting
 
 6.Grouping by:  Today
+
               Yesterday
+              
               A Week Ago
+              
               Older
 
 FILTERING & SEARCH:
 
 1.Search by title
+
 2.Filter by: All
+
            Active
+           
            Completed
+           
 3.Filter by priority
 
 RESPONSIVE DESIGN:
@@ -119,3 +134,7 @@ BACKEND:
 DATABASE:
 
 1.Entity Framework Core migrations used for schema management
+
+AUTHOR
+
+Anjum S
