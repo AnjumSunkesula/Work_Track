@@ -1,16 +1,76 @@
-# React + Vite
+WORK TRACK
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack task management application that allows users to create, update, organize, and track tasks with priority and status management.
+Built with a modern React frontend and a secure backend API.
 
-Currently, two official plugins are available:
+FEATURES
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+AUTHENTICATION:
 
-## React Compiler
+1.User registration & login
+2.JWT-based authentication
+3.Persistent login via localStorage
+4.Protected routes
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+DASHBOARD:
 
-## Expanding the ESLint configuration
+1.Total Tasks
+2.Completed Tasks
+3.Pending Tasks
+4.Recent activity feed
+5.Responsive status cards
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+TASK MANAGEMENT:
+
+1.Create tasks with:  Title
+                    Description
+                    Priority (Low / Medium / High)
+                    Due Date
+                    Description (Optional)
+2.Edit & delete tasks
+3.Toggle completion
+4.Status auto-calculation:   Not Started
+                           In Progress
+                           Due Today
+                           Overdue
+                           Completed
+5.Priority-based sorting
+6.Grouping by:  Today
+              Yesterday
+              A Week Ago
+              Older
+
+FILTERING & SEARCH:
+
+1.Search by title
+2.Filter by: All
+           Active
+           Completed
+3.Filter by priority
+
+RESPONSIVE DESIGN:
+
+1.Desktop: table-based layout
+2.Mobile: card-based layout
+3.Expandable descriptions
+4.Interactive UI elements
+5.Smooth transitions
+
+TECH STACK
+
+FRONTEND:
+
+1.React
+2.Tailwind CSS
+3.Lucide React Icons
+4.Context API
+
+BACKEND:
+
+1.Entity Framework Core
+2.ASP.NET CORE Web API
+3.MySQL
+4.JWT Authentication
+
+
+1.
