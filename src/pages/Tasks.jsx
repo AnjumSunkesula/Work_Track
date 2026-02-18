@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getTasks, createTask, deleteTask, toggleTask, updateTask } from "../api/tasks";
 import { useAuth } from "../context/AuthContext";
-import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus, PenLine, PencilLine  } from "lucide-react";
+import { Check, CircleCheckBig, Trash2, SlidersHorizontal, Plus, PenLine, ChevronDown  } from "lucide-react";
 import PriorityBadge from "../components/PriorityBadge";
 import TaskModal from "../components/TaskModal";
 
@@ -391,25 +391,27 @@ export default function Tasks() {
 
                       {/* TASK TITLE */}
                       <td className="px-4 py-3 text-sm">
-                        <span
-                          onClick={() => {
-                            console.log("clicked", task.id,task.description)
-                            setExpandedTaskId(
-                              expandedTaskId === task.id ? null : task.id
-                            );
-                          }}
-                          className={`
-                            cursor-pointer
-                            hover:underline
-                            ${
-                              task.isCompleted
-                                ? "line-through text-slate-400"
-                                : "text-brand-dark"
-                            }
-                          `}
+                        <div
+                          className={`flex items-center gap-2
+                          ${task.isCompleted ? "line-through text-slate-400" : "text-brand-dark"}`}
                         >
-                          {task.title}
-                        </span>
+                          <span className="text-sm md:text-base">
+                            {task.title}
+                          </span>
+
+                          {task.description && (
+                            <ChevronDown
+                              onClick={() =>
+                                setExpandedTaskId(
+                                  expandedTaskId === task.id ? null : task.id
+                                )
+                              }
+                              size={16} 
+                              className={`transition-transform duration-200
+                                ${expandedTaskId === task.id ? "rotate-180" : ""}`}
+                            />
+                          )}
+                        </div>
                       </td>
 
                       {/* STATUS */}
@@ -516,11 +518,27 @@ export default function Tasks() {
                         )}
                       </button>
                       <h3
-                        onClick={() => setExpandedTaskId(expandedTaskId === task.id ? null : task.id)}
-                        className="text-sm font-medium text-brand-dark leading-snug cursor-pointer"
-                      >
-                        {task.title}
-                      </h3>
+    className={`
+      text-sm font-medium leading-snug
+      ${task.isCompleted ? "line-through text-slate-400" : "text-brand-dark"}
+      ${task.description ? "cursor-pointer" : ""}
+      `}
+      >
+    {task.title}
+  </h3>
+
+  {task.description && (
+    <ChevronDown
+      onClick={() =>
+        task.description &&
+        setExpandedTaskId(expandedTaskId === task.id ? null : task.id)
+      }
+      size={14}
+      className={`transition-transform text-brand-dark duration-200 ${
+        expandedTaskId === task.id ? "rotate-180" : ""
+      }`}
+    />
+  )}
                     </div>
 
                     <PriorityBadge level={task.priority} />
