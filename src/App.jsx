@@ -33,6 +33,7 @@ function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="tasks" element={<Tasks />} />
+            <Route path="calendar" element={<div className="flex items-center justify-center text-brand-dark min-h-screen">The calendar page is under construction. Please check back later.</div>} />
           </Route>
 
         </Routes>
