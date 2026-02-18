@@ -299,7 +299,7 @@ export default function Tasks() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-1 rounded-full text-md font-medium transition
+            className={`px-2 md:px-4 py-1 rounded-full text-md font-medium transition
               ${filter === f
                 ? "bg-brand-dark text-white"
                 : "bg-transparent text-slate-500 hover:bg-brand-secondary hover:text-white"
