@@ -124,8 +124,11 @@ FRONTEND:
 BACKEND:
 
 1.Deployed on Render
+
 2.ASP.NET Core Web API hosted on Render
+
 3.Connected to managed PostgreSQL database
+
 4.Environment variables securely configured
 
 DATABASE:
@@ -133,4 +136,5 @@ DATABASE:
 1.Entity Framework Core migrations used for schema management
 
 AUTHOR
+
 Anjum S
